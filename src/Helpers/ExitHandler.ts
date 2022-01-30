@@ -3,7 +3,7 @@ import debug from 'debug';
 
 const logError = debug('cordle:exit');
 
-export default class ExitHandler {
+export class ExitHandler {
 	static cleanupHandler: () => Promise<void> | undefined;
 
 	static Setup(): void {

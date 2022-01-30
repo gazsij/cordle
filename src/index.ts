@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
-import Database from './Services/Database';
-import Bot from './Services/Bot';
-import ExitHandler from './Helpers/ExitHandler';
+import { Database } from './Services/Database';
+import { Bot } from './Services/Bot';
+import { ExitHandler } from './Helpers/ExitHandler';
 import { Config } from './Helpers/Config';
 
 (async () => {

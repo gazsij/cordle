@@ -1,5 +1,5 @@
 import Words from '../Helpers/Words';
-import PlayerRepo from '../Repositories/PlayerRepo';
+import { PlayerRepo } from '../Repositories/PlayerRepo';
 import Format from '../Helpers/Format';
 import { ICommand } from '../Types/Abstract';
 

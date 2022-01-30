@@ -3,11 +3,6 @@ import { getModelForClass, index, modelOptions, prop } from '@typegoose/typegoos
 import { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
-export interface IPlayer {
-	discordID: string
-	games: IGame[]
-}
-
 class Guess {
 
 	@prop({ required: true })

@@ -1,4 +1,4 @@
-import PlayerRepo from '../Repositories/PlayerRepo';
+import { PlayerRepo } from '../Repositories/PlayerRepo';
 import Format from '../Helpers/Format';
 import { IButton } from '../Types/Abstract';
 import Words from '../Helpers/Words';

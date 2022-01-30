@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 
-import PlayerRepo from '../Repositories/PlayerRepo';
+import { PlayerRepo } from '../Repositories/PlayerRepo';
 import Format from '../Helpers/Format';
 import Words from '../Helpers/Words';
 import { ICommand, IGuess, IReplyOptions } from '../Types/Abstract';

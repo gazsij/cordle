@@ -9,7 +9,7 @@ const logEvent = debug('cordle:db:event');
 const logError = debug('cordle:db:error');
 const logWarn = debug('cordle:db:warn');
 
-export default class Database {
+export class Database {
 	private static mongooseInstance: Mongoose;
 	private static mongooseConnection: Connection;
 

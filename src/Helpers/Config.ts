@@ -1,5 +1,5 @@
-import { ColorResolvable } from 'discord.js';
 import path from 'path';
+import { ColorResolvable } from 'discord.js';
 
 import { Env } from '../Types/Constants';
 

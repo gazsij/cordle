@@ -15,7 +15,7 @@ const logEvent = debug('cordle:bot:event');
 const logError = debug('cordle:bot:error');
 const logWarn = debug('cordle:bot:warn');
 
-export default class Bot {
+export class Bot {
 	private static client: Client;
 	static readonly commands = new Collection<string, ICommand>();
 	static readonly buttons = new Collection<string, IButton>();

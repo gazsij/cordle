@@ -2,7 +2,7 @@ import { Player } from '../Models/Player';
 import { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
-export default class PlayerRepo {
+export class PlayerRepo {
 
 	public static async GetPlayer(discordID: string) {
 		return await Player.findOne({ discordID });
