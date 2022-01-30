@@ -7,7 +7,7 @@ import { ICommand, IGuess, IReplyOptions } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { MessageButton } from 'discord.js';
 
-const command: ICommand = {
+export default {
 	name: 'guess',
 	description: 'Submit a guess for the current word.',
 	options: [
@@ -20,8 +20,7 @@ const command: ICommand = {
 	],
 	execute: async interaction => {
 		const currentDay = Words.CurrentDay;
-		const player = await PlayerRepo.GetOrCreatePlayer(interaction.user.id);
-		const game = await PlayerRepo.GetOrCreateGame(player, currentDay);
+		const { game } = await PlayerRepo.GetOrCreateGame(interaction.user.id, currentDay);
 
 		if (game.finished)
 			return interaction.reply(Format.Reply({ msg: 'You have already completed today\'s word.', ephemeral: true }));
@@ -76,6 +75,4 @@ const command: ICommand = {
 
 		return interaction.reply(Format.Reply(replyOptions));
 	}
-};
-
-export = command;
+} as ICommand;

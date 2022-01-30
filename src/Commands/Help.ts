@@ -4,7 +4,7 @@ import Bot from '../Services/Bot';
 import Format from '../Helpers/Format';
 import { ICommand } from '../Types/Abstract';
 
-const command: ICommand = {
+export default {
 	name: 'help',
 	description: 'List all commands or info about a specific command.',
 	options: [
@@ -41,8 +41,6 @@ const command: ICommand = {
 
 		if (command.description) data.push(`**Description:** ${command.description}`);
 
-		return interaction.reply(Format.Reply({ msg: data.join('\n') }));
+		return interaction.reply(Format.Reply({ msg: data }));
 	}
-};
-
-export = command;
+} as ICommand;

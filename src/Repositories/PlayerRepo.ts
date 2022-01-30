@@ -19,10 +19,14 @@ export default class PlayerRepo {
 		});
 	}
 
-	public static async GetOrCreateGame(player: IPlayerDoc, day: number): Promise<IGame> {
+	public static async GetOrCreateGame(discordID: string, day: number) {
+		const player = await this.GetOrCreatePlayer(discordID);
 		const game = player.games.find(game => game.day == day);
 		if (game)
-			return game;
+			return {
+				player,
+				game
+			};
 
 		const newGame: IGame = {
 			day,
@@ -34,18 +38,14 @@ export default class PlayerRepo {
 		player.games.push(newGame);
 		await player.save();
 
-		return newGame;
-	}
-
-	public static async GetGame(discordID: string, day: number): Promise<IGame> {
-		const player = await PlayerRepo.GetOrCreatePlayer(discordID);
-
-		return await PlayerRepo.GetOrCreateGame(player, day);
+		return {
+			player,
+			game: newGame
+		};
 	}
 
 	public static async AddGuess(discordID: string, day: number, guess: IGuess[]): Promise<IGame> {
-		const player = await PlayerRepo.GetOrCreatePlayer(discordID);
-		const game = await PlayerRepo.GetOrCreateGame(player, day);
+		const { player, game } = await PlayerRepo.GetOrCreateGame(discordID, day);
 
 		game.guesses.push(guess);
 
