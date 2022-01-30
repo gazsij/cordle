@@ -1,33 +1,46 @@
-import { model, Schema, Document } from 'mongoose';
+import { getModelForClass, index, modelOptions, prop } from '@typegoose/typegoose';
 
-import { IGame } from '../Types/Abstract';
+import { IGame, IGuess } from '../Types/Abstract';
+import { GuessState } from '../Types/Constants';
 
-interface IPlayer {
+export interface IPlayer {
 	discordID: string
 	games: IGame[]
 }
 
-interface IPlayerDoc extends IPlayer, Document { }
+class Guess {
 
-const PlayerSchemaFields = {
-	discordID: { type: String, require: true, unique: true },
-	games: [
-		{
-			day: { type: Number, require: true },
-			success: { type: Boolean, require: true },
-			finished: { type: Boolean, require: true },
-			guesses: [[
-				{
-					state: { type: Number, require: true },
-					letter: { type: String, require: true, maxlength: 1, trim: true, uppercase: true }
-				}
-			]]
-		}
-	]
-};
+	@prop({ required: true })
+	public state: GuessState;
 
-const PlayerSchema = new Schema(PlayerSchemaFields);
+	@prop({ required: true, maxlength: 1, trim: true, uppercase: true })
+	public letter: string;
+}
 
-const Player = model('Player', PlayerSchema);
+class Game {
 
-export { IPlayer, IPlayerDoc, Player };
+	@prop({ required: true })
+	public day: number;
+
+	@prop({ required: true })
+	public success: boolean;
+
+	@prop({ required: true })
+	public finished: boolean;
+
+	@prop({ type: () => [[Guess]], required: false, default: [[]] })
+	public guesses: IGuess[][];
+}
+
+@index({ discordID: 1 }, { unique: true })
+@modelOptions({ schemaOptions: { collection: 'Player' } })
+class PlayerModel {
+
+	@prop({ required: true, unique: true })
+	public discordID: string;
+
+	@prop({ type: () => [Game], default: [] })
+	public games: IGame[];
+}
+
+export const Player = getModelForClass(PlayerModel);

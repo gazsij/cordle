@@ -1,14 +1,14 @@
-import { Player, IPlayer, IPlayerDoc } from '../Models/Player';
+import { Player, IPlayer } from '../Models/Player';
 import { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
 export default class PlayerRepo {
 
-	public static async GetPlayer(discordID: string): Promise<IPlayer> {
+	public static async GetPlayer(discordID: string) {
 		return await Player.findOne({ discordID });
 	}
 
-	public static async GetOrCreatePlayer(discordID: string): Promise<IPlayerDoc> {
+	public static async GetOrCreatePlayer(discordID: string) {
 		const player = await Player.findOne({ discordID });
 		if (player)
 			return player;
@@ -19,7 +19,7 @@ export default class PlayerRepo {
 		});
 	}
 
-	public static async GetOrCreateGame(player: IPlayerDoc, day: number): Promise<IGame> {
+	public static async GetOrCreateGame(player: IPlayer, day: number) {
 		const game = player.games.find(game => game.day == day);
 		if (game)
 			return game;
