@@ -4,9 +4,14 @@
   "description": "Discord bot Wordle clone",
   "main": "./build/index.js",
   "type": "commonjs",
+  "engines": {
+		"node": "^16.9.*",
+		"yarn": "^1.22.*"
+	},
   "scripts": {
     "lint": "eslint --fix --ext .ts,.tsx .",
     "prepare": "husky install",
+    "clean": "npx rimraf ./yarn.lock && npx rimraf ./**/node_modules",
     "build": "tsc",
     "prestart": "npm run lint && npm run build",
     "start": "node .",
