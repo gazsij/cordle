@@ -20,6 +20,8 @@ const logWarn = debug('cordle:bot:warn');
 
 export default class Bot {
 	private static client: Client;
+	static readonly commands = new Collection<string, ICommand>();
+	static readonly buttons = new Collection<string, IButton>();
 
 	public static async Setup(): Promise<void> {
 		logSystem('Starting bot...');
@@ -27,8 +29,6 @@ export default class Bot {
 		Bot.client = new Client({
 			intents: [Intents.FLAGS.GUILDS]
 		}) as IClient;
-		Bot.client.commands = new Collection<string, ICommand>();
-		Bot.client.buttons = new Collection<string, IButton>();
 
 		const globPromise = promisify(glob);
 		const commandFolder = path.resolve(`${__dirname}/../Commands/*{.js,.ts}`);
@@ -36,24 +36,25 @@ export default class Bot {
 
 		for (const file of commandFiles) {
 			const command = await import(file) as ICommand;
-			Bot.client.commands.set(command.name, command);
+			console.log(command.name);
+			Bot.commands.set(command.name, command);
 		}
 
-		logSystem(`Imported ${Bot.client.commands.size} command(s).`);
+		logSystem(`Imported ${Bot.commands.size} command(s).`);
 
 		const buttonFolder = path.resolve(`${__dirname}/../Buttons/*{.js,.ts}`);
 		const buttonFiles = await globPromise(buttonFolder);
 
 		for (const file of buttonFiles) {
 			const button = await import(file) as IButton;
-			Bot.client.buttons.set(button.customID, button);
+			Bot.buttons.set(button.customID, button);
 		}
 
-		logSystem(`Imported ${Bot.client.buttons.size} button(s).`);
+		logSystem(`Imported ${Bot.buttons.size} button(s).`);
 
 		logSystem('Started refreshing application (/) commands.');
 
-		const body = Bot.client.commands.map((command: ICommand) => {
+		const body = Bot.commands.map((command: ICommand) => {
 			const builder = new SlashCommandBuilder()
 				.setName(command.name)
 				.setDescription(command.description);
@@ -130,7 +131,7 @@ export default class Bot {
 		if (!interaction.isCommand()) return;
 
 		try {
-			const command = Bot.client.commands.get(interaction.commandName);
+			const command = Bot.commands.get(interaction.commandName);
 
 			if (!command) throw `Command ${interaction.commandName} not found.`;
 
@@ -146,7 +147,7 @@ export default class Bot {
 		if (!interaction.isButton()) return;
 
 		try {
-			const button = Bot.client.buttons.get(interaction.customId);
+			const button = Bot.buttons.get(interaction.customId);
 
 			if (!button) throw `Button ${interaction.customId} not found.`;
 

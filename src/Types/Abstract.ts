@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
-import { Client, Collection, CommandInteraction, CacheType, ButtonInteraction, MessageButton, MessageAttachment } from 'discord.js';
+import { Client, Collection, CommandInteraction, CacheType, ButtonInteraction, MessageButton, MessageAttachment, MessageEmbed } from 'discord.js';
 
 import { GuessState } from './Constants';
 
@@ -48,6 +48,7 @@ export interface IGame {
 
 export interface IReplyOptions {
 	msg: string | string[],
+	embed?: MessageEmbed,
 	title?: string,
 	attachment?: MessageAttachment,
 	button?: MessageButton,

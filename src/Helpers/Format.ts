@@ -19,7 +19,7 @@ export default class Format {
 	}
 
 	public static Reply(options: IReplyOptions): InteractionReplyOptions {
-		const embed = Format.Embed(options.title);
+		const embed = options.embed ?? Format.Embed(options.title);
 
 		if (Array.isArray(options.msg))
 			embed.setDescription(options.msg.join('\n'));
