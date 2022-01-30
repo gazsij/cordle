@@ -5,7 +5,7 @@ const command: ICommand = {
 	name: 'ping',
 	description: 'Replies with Pong!',
 	execute: async interaction => {
-		await interaction.reply(Format.Reply({ msg: 'Pong!' }));
+		return interaction.reply(Format.Reply({ msg: 'Pong!' }));
 	}
 };
 

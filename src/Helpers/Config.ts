@@ -20,8 +20,14 @@ export default class Config {
 	static readonly BOT_VERSION = `Cordle ${Config.APP_VERSION}.${Config.APP_PATCH}`;
 	static readonly BOT_ICON = process.env.BOT_ICON;
 
+	// db
+	static readonly DB_CONN = process.env.DB_CONN as string || undefined;
+
 	public static Validate(): void {
 		if (Config.BOT_TOKEN === undefined)
 			throw new Error('BOT_TOKEN not specified');
+
+		if (Config.DB_CONN === undefined)
+			throw new Error('DB_CONN not specified');
 	}
 }
