@@ -1,4 +1,4 @@
-import { Player, IPlayer } from '../Models/Player';
+import { Player } from '../Models/Player';
 import { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
@@ -19,10 +19,13 @@ export default class PlayerRepo {
 		});
 	}
 
-	public static async GetOrCreateGame(player: IPlayer, day: number) {
+	public static async GetOrCreateGame(discordID: string, day: number) {
+		const player = await this.GetOrCreatePlayer(discordID);
 		const game = player.games.find(game => game.day == day);
-		if (game)
-			return game;
+		if (game) return {
+			player,
+			game
+		};
 
 		const newGame: IGame = {
 			day,
@@ -34,18 +37,14 @@ export default class PlayerRepo {
 		player.games.push(newGame);
 		await player.save();
 
-		return newGame;
+		return {
+			player,
+			game: newGame
+		};
 	}
 
-	public static async GetGame(discordID: string, day: number): Promise<IGame> {
-		const player = await PlayerRepo.GetOrCreatePlayer(discordID);
-
-		return await PlayerRepo.GetOrCreateGame(player, day);
-	}
-
-	public static async AddGuess(discordID: string, day: number, guess: IGuess[]): Promise<IGame> {
-		const player = await PlayerRepo.GetOrCreatePlayer(discordID);
-		const game = await PlayerRepo.GetOrCreateGame(player, day);
+	public static async AddGuess(discordID: string, day: number, guess: IGuess[]) {
+		const { player, game } = await PlayerRepo.GetOrCreateGame(discordID, day);
 
 		game.guesses.push(guess);
 

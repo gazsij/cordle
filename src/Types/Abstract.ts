@@ -1,11 +1,10 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
-import { Client, Collection, CommandInteraction, CacheType, ButtonInteraction, MessageButton, MessageAttachment, MessageEmbed } from 'discord.js';
+import { CommandInteraction, CacheType, ButtonInteraction, MessageButton, MessageAttachment, MessageEmbed } from 'discord.js';
 
 import { GuessState } from './Constants';
 
-export interface IClient extends Client {
-	commands: Collection<string, ICommand>
-	buttons: Collection<string, IButton>
+export interface ICommandExport {
+	default: ICommand
 }
 
 export interface ICommand {
@@ -27,6 +26,10 @@ export interface ICommandOption {
 export interface ICommandChoice {
 	name: string
 	value: string | number
+}
+
+export interface IButtonExport {
+	default: IButton
 }
 
 export interface IButton {

@@ -2,16 +2,13 @@ import path from 'path';
 import glob from 'glob';
 import debug from 'debug';
 import { promisify } from 'util';
-import pEvent from 'p-event';
+import { pEvent } from 'p-event';
 import { Client, Collection, Intents, Interaction } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { ApplicationCommandOptionType } from 'discord-api-types/v9';
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/rest/v9';
 
 import Format from '../Helpers/Format';
-import Config from '../Helpers/Config';
-import { IButton, IClient, ICommand } from '../Types/Abstract';
+import { Config } from '../Helpers/Config';
+import { IButton, IButtonExport, ICommand, ICommandExport } from '../Types/Abstract';
+import CommandBuilder from '../Helpers/CommandBuilder';
 
 const logSystem = debug('cordle:bot:system');
 const logEvent = debug('cordle:bot:event');
@@ -28,15 +25,14 @@ export default class Bot {
 
 		Bot.client = new Client({
 			intents: [Intents.FLAGS.GUILDS]
-		}) as IClient;
+		});
 
 		const globPromise = promisify(glob);
 		const commandFolder = path.resolve(`${__dirname}/../Commands/*{.js,.ts}`);
 		const commandFiles = await globPromise(commandFolder);
 
 		for (const file of commandFiles) {
-			const command = await import(file) as ICommand;
-			console.log(command.name);
+			const { default: command } = await import(file) as ICommandExport;
 			Bot.commands.set(command.name, command);
 		}
 
@@ -46,7 +42,7 @@ export default class Bot {
 		const buttonFiles = await globPromise(buttonFolder);
 
 		for (const file of buttonFiles) {
-			const button = await import(file) as IButton;
+			const { default: button } = await import(file) as IButtonExport;
 			Bot.buttons.set(button.customID, button);
 		}
 
@@ -54,49 +50,7 @@ export default class Bot {
 
 		logSystem('Started refreshing application (/) commands.');
 
-		const body = Bot.commands.map((command: ICommand) => {
-			const builder = new SlashCommandBuilder()
-				.setName(command.name)
-				.setDescription(command.description);
-
-			if (command.options) {
-				command.options.forEach(option => {
-					switch (option.dataType) {
-						case ApplicationCommandOptionType.String:
-							builder.addStringOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Integer:
-							builder.addIntegerOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Number:
-							builder.addNumberOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Boolean:
-							builder.addBooleanOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.User:
-							builder.addUserOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Channel:
-							builder.addChannelOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Role:
-							builder.addRoleOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-						case ApplicationCommandOptionType.Mentionable:
-							builder.addMentionableOption(o => o.setName(option.name).setDescription(option.description).setRequired(option.required));
-							break;
-					}
-				});
-			}
-
-			return builder.toJSON();
-		});
-
-		const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN || '');
-		await rest.put(Routes.applicationGuildCommands(process.env.BOT_CLIENT_ID || '', process.env.BOT_GUILD_ID || ''), { body });
-
-		await rest.put(Routes.applicationCommands(process.env.BOT_CLIENT_ID || ''), { body });
+		await CommandBuilder.RegisterCommands(Bot.commands);
 
 		logSystem('Successfully reloaded application (/) commands.');
 

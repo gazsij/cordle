@@ -2,7 +2,7 @@ import mongoose, { Mongoose, Connection } from 'mongoose';
 import { Db } from 'mongodb';
 import debug from 'debug';
 
-import Config from '../Helpers/Config';
+import { Config } from '../Helpers/Config';
 
 const logSystem = debug('cordle:db:system');
 const logEvent = debug('cordle:db:event');
