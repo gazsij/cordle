@@ -1,5 +1,5 @@
 import { Player } from '../Models/Player';
-import { IGame, IGuess } from '../Types/Abstract';
+import type { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
 export class PlayerRepo {

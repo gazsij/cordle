@@ -7,7 +7,7 @@ import { Client, Collection, Intents, Interaction } from 'discord.js';
 
 import Format from '../Helpers/Format';
 import { Config } from '../Helpers/Config';
-import { IButton, IButtonExport, ICommand, ICommandExport } from '../Types/Abstract';
+import type { IButton, IButtonExport, ICommand, ICommandExport } from '../Types/Abstract';
 import CommandBuilder from '../Helpers/CommandBuilder';
 
 const logSystem = debug('cordle:bot:system');

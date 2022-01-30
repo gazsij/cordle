@@ -2,7 +2,7 @@ import { InteractionReplyOptions, MessageActionRow, MessageAttachment, MessageEm
 import { createCanvas } from 'canvas';
 
 import { Config } from './Config';
-import { IGuess, IReplyOptions } from '../Types/Abstract';
+import type { IGuess, IReplyOptions } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
 export default class Format {

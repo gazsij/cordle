@@ -1,6 +1,6 @@
 import { getModelForClass, index, modelOptions, prop } from '@typegoose/typegoose';
 
-import { IGame, IGuess } from '../Types/Abstract';
+import type { IGame, IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
 class Guess {
