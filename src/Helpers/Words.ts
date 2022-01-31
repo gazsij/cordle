@@ -23,17 +23,27 @@ export class Words {
 	}
 
 	public static CheckGuess(word: string, answer: string): IGuess[] {
-		const guess: IGuess[] = [];
-		for (let c = 0; c < word.length; c++) {
-			const w = word.charAt(c);
-			const a = answer.charAt(c);
-			guess.push({
-				letter: w,
-				state: w == a ? GuessState.Correct : answer.includes(w) ? GuessState.Present : GuessState.Absent
-			});
+		const result: IGuess[] = [...word].map(c => ({ letter: c, state: GuessState.Absent }));
+
+		for (let i = 0; i < answer.length; i++) {
+			const answerLetter = answer.charAt(i);
+			const g = result[i];
+			if (g.letter == answerLetter) {
+				g.state = GuessState.Correct;
+				continue;
+			}
+
+			const guess = result.find(g => g.letter == answerLetter);
+			if (!guess)
+				continue;
+
+			if (guess.state != GuessState.Absent)
+				continue;
+
+			guess.state = GuessState.Present;
 		}
 
-		return guess;
+		return result;
 	}
 
 	public static ValidateGame(game: IGame, word: string) {
