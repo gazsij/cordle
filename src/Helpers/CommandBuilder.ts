@@ -3,7 +3,7 @@ import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
 import { ICommand, ICommandOption } from '../Types/Abstract';
-import Config from './Config';
+import { Config } from './Config';
 
 type SlashCommandOption = SlashCommandStringOption
 	| SlashCommandIntegerOption

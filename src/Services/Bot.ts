@@ -6,8 +6,8 @@ import pEvent from 'p-event';
 import { Client, Collection, Intents, Interaction } from 'discord.js';
 
 import Format from '../Helpers/Format';
-import Config from '../Helpers/Config';
-import { IButton, IButtonExport, ICommand, ICommandExport } from '../Types/Abstract';
+import { Config } from '../Helpers/Config';
+import type { IButton, IButtonExport, ICommand, ICommandExport } from '../Types/Abstract';
 import CommandBuilder from '../Helpers/CommandBuilder';
 
 const logSystem = debug('cordle:bot:system');
@@ -15,7 +15,7 @@ const logEvent = debug('cordle:bot:event');
 const logError = debug('cordle:bot:error');
 const logWarn = debug('cordle:bot:warn');
 
-export default class Bot {
+export class Bot {
 	private static client: Client;
 	static readonly commands = new Collection<string, ICommand>();
 	static readonly buttons = new Collection<string, IButton>();

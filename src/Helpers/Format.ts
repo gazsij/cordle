@@ -1,8 +1,8 @@
 import { InteractionReplyOptions, MessageActionRow, MessageAttachment, MessageEmbed } from 'discord.js';
 import { createCanvas } from 'canvas';
 
-import Config from './Config';
-import { IGuess, IReplyOptions } from '../Types/Abstract';
+import { Config } from './Config';
+import type { IGuess, IReplyOptions } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
 export default class Format {

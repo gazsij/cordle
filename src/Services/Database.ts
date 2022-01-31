@@ -2,14 +2,14 @@ import mongoose, { Mongoose, Connection } from 'mongoose';
 import { Db } from 'mongodb';
 import debug from 'debug';
 
-import Config from '../Helpers/Config';
+import { Config } from '../Helpers/Config';
 
 const logSystem = debug('cordle:db:system');
 const logEvent = debug('cordle:db:event');
 const logError = debug('cordle:db:error');
 const logWarn = debug('cordle:db:warn');
 
-export default class Database {
+export class Database {
 	private static mongooseInstance: Mongoose;
 	private static mongooseConnection: Connection;
 
