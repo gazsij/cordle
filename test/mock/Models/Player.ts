@@ -43,7 +43,7 @@ class Game {
 }
 
 @index({ discordID: 1 }, { unique: true })
-@modelOptions({ schemaOptions: { collection: 'Player' } })
+@modelOptions({ schemaOptions: { collection: 'players' } })
 class PlayerModel {
 
 	@prop({ required: true, unique: true })
