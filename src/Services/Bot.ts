@@ -63,7 +63,7 @@ export class Bot {
 		Bot.client.on('warn', logWarn);
 
 		// setup promise for when client is ready
-		const ready = await pEvent(Bot.client, 'ready');
+		const ready = pEvent(Bot.client, 'ready');
 
 		// => Login
 		await Bot.client.login(Config.BOT_TOKEN);
