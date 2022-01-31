@@ -10,7 +10,13 @@ export class Words {
 
 	private static readonly Guesses: string[] = guesses;
 
-	static readonly CurrentDay: number = Math.round(Math.abs((new Date(2021, 6, 18).getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000)));
+	private static readonly StartDate: number = new Date(2021, 5, 19).getTime();
+
+	public static GetCurrentDay(): number {
+		const today = new Date().setHours(0, 0, 0, 0);
+		const diff = (Words.StartDate - today) / (24 * 60 * 60 * 1000);
+		return Math.round(Math.abs(diff));
+	}
 
 	public static GetAnswer(day: number): string {
 		return Words.Answers[day];
@@ -43,14 +49,14 @@ export class Words {
 		if (word.length != 5)
 			return { msg: 'Guesses must be 5 letters long.', valid: false };
 
-		if (!Words.Answers.includes(word) || Words.Guesses.includes(word))
+		if (!Words.Answers.includes(word) && !Words.Guesses.includes(word))
 			return { msg: 'Not in word list.', valid: false };
 
 		return { valid: true, msg: '' };
 	}
 
 	public static async ShareGame(discordID: string, name: string): Promise<IReplyOptions> {
-		const currentDay = Words.CurrentDay;
+		const currentDay = Words.GetCurrentDay();
 		const { game } = await PlayerRepo.GetOrCreateGame(discordID, currentDay);
 
 		if (!game.finished)
