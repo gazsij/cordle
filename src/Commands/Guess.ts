@@ -3,8 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import PlayerRepo from '../Repositories/PlayerRepo';
 import Format from '../Helpers/Format';
 import Words from '../Helpers/Words';
-import { ICommand, IGuess, IReplyOptions } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { ICommand, IReplyOptions } from '../Types/Abstract';
 import { MessageButton } from 'discord.js';
 
 export default {
@@ -22,36 +21,15 @@ export default {
 		const currentDay = Words.CurrentDay;
 		const { game } = await PlayerRepo.GetOrCreateGame(interaction.user.id, currentDay);
 
-		if (game.finished)
-			return interaction.reply(Format.Reply({ msg: 'You have already completed today\'s word.', ephemeral: true }));
-
-		if (game.guesses.length >= 6)
-			return interaction.reply(Format.Reply({ msg: 'You have already used all guesses for today\'s word.', ephemeral: true }));
-
-		const word = interaction.options.getString('word')?.toLowerCase();
-		if (!word)
-			return interaction.reply(Format.Reply({ msg: 'You did not enter a word.', ephemeral: true }));
-
-		if (word.length != 5)
-			return interaction.reply(Format.Reply({ msg: 'Guesses must be 5 letters long.', ephemeral: true }));
-
-		if (!Words.ValidGuess(word))
-			return interaction.reply(Format.Reply({ msg: 'Not in word list.', ephemeral: true }));
+		const word = interaction.options.getString('word', true).toLowerCase();
+		const validation = Words.ValidateGame(game, word);
+		if (validation.valid)
+			return interaction.reply(Format.Reply({ msg: validation.msg, ephemeral: true }));
 
 		const answer = Words.GetAnswer(currentDay);
-
-		const guess: IGuess[] = [];
-		for (let c = 0; c < word.length; c++) {
-			const w = word.charAt(c);
-			const a = answer.charAt(c);
-			guess.push({
-				letter: w,
-				state: w == a ? GuessState.Correct : answer.includes(w) ? GuessState.Present : GuessState.Absent
-			});
-		}
+		const guess = Words.CheckGuess(word, answer);
 
 		const updatedGame = await PlayerRepo.AddGuess(interaction.user.id, currentDay, guess);
-
 		const img = Format.GuessesToImage(updatedGame.guesses);
 
 		const footer = updatedGame.success ?
