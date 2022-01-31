@@ -23,7 +23,7 @@ export default {
 
 		const word = interaction.options.getString('word', true).toLowerCase();
 		const validation = Words.ValidateGame(game, word);
-		if (validation.valid)
+		if (!validation.valid)
 			return interaction.reply(Format.Reply({ msg: validation.msg, ephemeral: true }));
 
 		const answer = Words.GetAnswer(currentDay);
