@@ -11,6 +11,21 @@ export interface ICommand {
 	name: string
 	description: string
 	options?: ICommandOption[]
+	subCommands?: ISubCommand[]
+	subCommandGroups?: ISubCommandGroup[]
+	execute: (interaction: CommandInteraction<CacheType>) => Promise<void>
+}
+
+export interface ISubCommandGroup {
+	name: string
+	description: string
+	subCommands?: ISubCommand[]
+}
+
+export interface ISubCommand {
+	name: string
+	description: string
+	options?: ICommandOption[]
 	execute: (interaction: CommandInteraction<CacheType>) => Promise<void>
 }
 

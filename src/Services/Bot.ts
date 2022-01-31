@@ -89,7 +89,35 @@ export class Bot {
 
 			if (!command) throw `Command ${interaction.commandName} not found.`;
 
-			await command.execute(interaction);
+			if (command.subCommands) {
+				const subCommandName = interaction.options.getSubcommand(false);
+
+				const subCommand = command.subCommands.find(sub => sub.name == subCommandName);
+
+				if (!subCommand) throw `Sub command ${subCommandName} not found.`;
+
+				return subCommand.execute(interaction);
+			}
+
+			if (command.subCommandGroups) {
+				const groupName = interaction.options.getSubcommandGroup(false);
+
+				const group = command.subCommandGroups.find(sub => sub.name == groupName);
+
+				if (!group) throw `Group ${groupName} not found.`;
+
+				if (!group.subCommands) throw `No sub commands registered for ${groupName}.`;
+
+				const subCommandName = interaction.options.getSubcommand(false);
+
+				const subCommand = group.subCommands.find(sub => sub.name == subCommandName);
+
+				if (!subCommand) throw `Sub command ${interaction.commandName} not found in group ${groupName}.`;
+
+				return subCommand.execute(interaction);
+			}
+
+			return command.execute(interaction);
 		}
 		catch (error) {
 			logError(error);
@@ -105,7 +133,7 @@ export class Bot {
 
 			if (!button) throw `Button ${interaction.customId} not found.`;
 
-			await button.execute(interaction);
+			return button.execute(interaction);
 		}
 		catch (error) {
 			logError(error);
