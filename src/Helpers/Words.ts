@@ -2,10 +2,10 @@ import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
 import { IGame, IGuess, IReplyOptions } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
-import PlayerRepo from '../Repositories/PlayerRepo';
-import Format from './Format';
+import { PlayerRepo } from '../Repositories/PlayerRepo';
+import { Format } from './Format';
 
-export default class Words {
+export class Words {
 	private static readonly Answers: string[] = answers;
 
 	private static readonly Guesses: string[] = guesses;

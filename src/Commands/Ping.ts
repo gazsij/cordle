@@ -1,4 +1,4 @@
-import Format from '../Helpers/Format';
+import { Format } from '../Helpers/Format';
 import { ICommand } from '../Types/Abstract';
 
 export default {

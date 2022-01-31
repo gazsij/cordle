@@ -1,8 +1,8 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 
 import { PlayerRepo } from '../Repositories/PlayerRepo';
-import Format from '../Helpers/Format';
-import Words from '../Helpers/Words';
+import { Words } from '../Helpers/Words';
+import { Format } from '../Helpers/Format';
 import { ICommand, IReplyOptions } from '../Types/Abstract';
 import { MessageButton } from 'discord.js';
 
