@@ -6,7 +6,7 @@ export class Database {
 	private static mongooseInstance: Mongoose;
 	private static mongooseConnection: Connection;
 
-	public static async Connect(): Promise<Mongoose> {
+	public static async Connect() {
 		if (Database.mongooseInstance) return Database.mongooseInstance;
 		Database.mongooseConnection = mongoose.connection;
 		Database.mongooseInstance = await mongoose.connect(connection);

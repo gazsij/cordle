@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { assert } from 'chai';
-import { Database } from './mock';
+import { Database, Player, discordID } from './mock';
 
 before(async () => {
 	await Database.Connect();
@@ -11,11 +11,30 @@ after(async () => {
 });
 
 describe('generic test runner', () => {
+
+	const id = discordID();
+
 	it('should be conencted to database', async () => {
-		const connected = await Database.IsConnected();
+		const connected = Database.IsConnected();
 		assert.isTrue(connected);
 	});
-	it('should be a placeholder', async () => {
-		assert.equal(1 + 1, 2);
+	it('should create a new suer', async () => {
+		const newPlayer = await Player.create({
+			discordID: id,
+			games: []
+		});
+		const newGame = {
+			day: 1,
+			success: false,
+			finished: false,
+			guesses: []
+		};
+		newPlayer.games.push(newGame);
+		await newPlayer.save();
+	});
+	it('should find a user by id', async () => {
+		const user = await Player.findOne({ discordID: id });
+		assert.exists(user);
+		assert.equal(user?.discordID, id);
 	});
 });
