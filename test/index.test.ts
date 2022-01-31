@@ -43,7 +43,7 @@ describe('generic test runner', () => {
 				{ letter: 'W', state: 0 }, { letter: 'e', state: 0 }, { letter: 'A', state: 0 }, { letter: 'r', state: 0 }, { letter: 'y', state: 0 }
 			]]
 		});
-		player?.save();
+		await player?.save();
 		player?.games.every((game) => {
 			game.guesses.every((guess) => {
 				guess.every(({ letter, state }) => {
