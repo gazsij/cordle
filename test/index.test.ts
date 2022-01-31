@@ -33,6 +33,26 @@ describe('generic test runner', () => {
 		newPlayer.games.push(newGame);
 		await newPlayer.save();
 	});
+	it('should enforce uppercase constraint', async () => {
+		const player = await Player.findOne({ discordID: id });
+		player?.games.push({
+			day: 2,
+			success: false,
+			finished: false,
+			guesses: [[
+				{ letter: 'W', state: 0 }, { letter: 'e', state: 0 }, { letter: 'A', state: 0 }, { letter: 'r', state: 0 }, { letter: 'y', state: 0 }
+			]]
+		});
+		player?.save();
+		player?.games.every((game) => {
+			game.guesses.every((guess) => {
+				guess.every(({ letter, state }) => {
+					assert.equal(letter === letter.toUpperCase(), true);
+					assert.isNumber(state);
+				});
+			});
+		});
+	});
 	it('should create many unique user ids', async () => {
 		let index = 0;
 		const ids = [];

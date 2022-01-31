@@ -1,7 +1,7 @@
 import mongoose, { Mongoose, Connection } from 'mongoose';
 
 const connection = 'mongodb://localhost:27017/dev';
-const collections = ['Payer'];
+const collections = ['Player'];
 
 export class Database {
 	private static mongooseInstance: Mongoose;
@@ -11,7 +11,9 @@ export class Database {
 		if (Database.mongooseInstance) return Database.mongooseInstance;
 		Database.mongooseConnection = mongoose.connection;
 		Database.mongooseInstance = await mongoose.connect(connection);
+		const colls = Database.mongooseConnection.collections;
 		const seed = collections.reduce((acc: Promise<unknown>[], name) => {
+			if (colls[name]) return acc;
 			acc.push(Database.mongooseConnection.createCollection(name));
 			return acc;
 		}, []);
@@ -20,11 +22,14 @@ export class Database {
 	}
 
 	public static async Close() {
+		const colls = Database.mongooseConnection.collections;
 		const drop = collections.reduce((acc: Promise<unknown>[], name) => {
+			if (!colls[name]) return acc;
 			acc.push(Database.mongooseConnection.dropCollection(name));
 			return acc;
 		}, []);
 		await Promise.all(drop);
+		await Database.mongooseConnection.dropDatabase();
 		await Database.mongooseConnection.close();
 	}
 
