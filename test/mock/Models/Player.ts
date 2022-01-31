@@ -53,4 +53,9 @@ class PlayerModel {
 	public games: IGame[];
 }
 
+export interface IPlayer {
+	discordID: string;
+	games: IGame[];
+}
+
 export const Player = getModelForClass(PlayerModel);

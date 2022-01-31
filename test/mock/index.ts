@@ -1,3 +1,3 @@
 export { Database } from './Database';
-export { Player } from './Models';
+export { Player, IPlayer } from './Models';
 export { discordID } from './Utils';
