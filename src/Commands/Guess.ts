@@ -18,7 +18,7 @@ export default {
 		}
 	],
 	execute: async interaction => {
-		const currentDay = Words.CurrentDay;
+		const currentDay = Words.GetCurrentDay();
 		const { game } = await PlayerRepo.GetOrCreateGame(interaction.user.id, currentDay);
 
 		const word = interaction.options.getString('word', true).toLowerCase();
