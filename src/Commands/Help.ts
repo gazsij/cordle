@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 
 import { Bot } from '../Services/Bot';
-import Format from '../Helpers/Format';
+import { Format } from '../Helpers/Format';
 import { ICommand } from '../Types/Abstract';
 
 export default {
