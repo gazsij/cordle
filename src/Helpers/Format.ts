@@ -5,7 +5,7 @@ import { Config } from './Config';
 import type { IGuess, IReplyOptions } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 
-export default class Format {
+export class Format {
 
 	public static Embed(title?: string): MessageEmbed {
 		const embed = new MessageEmbed()

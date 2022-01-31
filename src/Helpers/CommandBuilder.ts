@@ -15,7 +15,7 @@ type SlashCommandOption = SlashCommandStringOption
 	| SlashCommandMentionableOption;
 
 
-export default class CommandBuilder {
+export class CommandBuilder {
 
 	static AddOptionDetails<T>(option: ICommandOption, builder: SlashCommandOption): T {
 		const data = builder
