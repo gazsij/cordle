@@ -19,7 +19,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Compose Docker Container
-        uses: actions/checkout@v2
         run: docker-compose -f "docker-compose.yml" up -d --build
 
       - name: Use Node.js
@@ -38,5 +37,4 @@ jobs:
         run: yarn test
 
       - name: Compose Down Docker Container
-        uses: actions/checkout@v2
         run: docker-compose -f "docker-compose.yml" down
