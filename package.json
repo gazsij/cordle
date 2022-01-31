@@ -6,7 +6,6 @@
   "type": "commonjs",
   "scripts": {
     "lint": "eslint --fix --ext .ts,.tsx .",
-    "prepare": "husky install",
     "test": "mocha",
     "clean": "npx rimraf ./package-lock.json && npx rimraf ./**/node_modules",
     "build": "tsc",

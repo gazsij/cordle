@@ -27,7 +27,7 @@ describe('generic test runner', () => {
 			day: 1,
 			success: false,
 			finished: false,
-			guesses: []
+			guesses: [[]]
 		};
 		newPlayer.games.push(newGame);
 		await newPlayer.save();

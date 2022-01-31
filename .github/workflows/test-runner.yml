@@ -31,13 +31,13 @@ jobs:
         run: npm install --frozen-lockfile
 
       - name: Lint Project
-        run: npm lint
+        run: npm run lint
 
       - name: Build Project
-        run: npm build
+        run: npm run build
 
       - name: Run Tests
-        run: npm test
+        run: npm run test
 
       - name: Compose Down Docker Container
         run: docker-compose -f "docker-compose.yml" down
