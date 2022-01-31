@@ -20,7 +20,6 @@ export class Database {
 	}
 
 	public static async Close() {
-		Database.mongooseConnection.dropCollection('Player');
 		const drop = collections.reduce((acc: Promise<unknown>[], name) => {
 			acc.push(Database.mongooseConnection.dropCollection(name));
 			return acc;
