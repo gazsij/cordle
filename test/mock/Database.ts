@@ -29,7 +29,6 @@ export class Database {
 			return acc;
 		}, []);
 		await Promise.all(drop);
-		await Database.mongooseConnection.dropDatabase();
 		await Database.mongooseConnection.close();
 	}
 
