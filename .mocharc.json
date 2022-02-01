@@ -3,7 +3,8 @@
     "test/**/*.test.ts"
   ],
   "require": [
-    "ts-node/register"
+    "ts-node/register",
+    "tsconfig-paths/register"
   ],
   "exit": true,
   "bail": true,
