@@ -34,7 +34,7 @@ export class Database {
 	}
 
 	public static GetConnection(): Db {
-		return Database.mongooseConnection.db;
+		return Database.mongooseConnection.db as Db;
 	}
 
 	public static async Close(): Promise<void> {

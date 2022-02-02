@@ -25,19 +25,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
-          cache: yarn
+          cache: npm
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: npm install --frozen-lockfile
 
       - name: Lint Project
-        run: yarn lint
+        run: npm run lint
 
       - name: Build Project
-        run: yarn build
+        run: npm run build
 
       - name: Run Tests
-        run: yarn test
+        run: npm run test
 
       - name: Compose Down Docker Container
         run: docker-compose -f "docker-compose.yml" down

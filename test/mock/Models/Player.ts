@@ -1,7 +1,22 @@
 import { getModelForClass, index, modelOptions, prop } from '@typegoose/typegoose';
 
-import type { IGame, IGuess } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+enum GuessState {
+	Absent,
+	Present,
+	Correct
+}
+
+interface IGuess {
+	state: GuessState
+	letter: string
+}
+
+interface IGame {
+	day: number
+	success: boolean
+	finished: boolean
+	guesses: IGuess[][]
+}
 
 class Guess {
 
@@ -36,6 +51,11 @@ class PlayerModel {
 
 	@prop({ type: () => [Game], default: [] })
 	public games: IGame[];
+}
+
+export interface IPlayer {
+	discordID: string;
+	games: IGame[];
 }
 
 export const Player = getModelForClass(PlayerModel);

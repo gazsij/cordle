@@ -1,16 +1,11 @@
-/* eslint-disable no-undef */
-import { assert } from 'chai';
+import { Database } from './mock';
 
-before(async () => {
-	// await Seed();
+before('create database collections', async () => {
+	await Database.Connect();
 });
-
-after(async () => {
-	// await Drop();
+describe('register tests', async () => {
+	require('./integration');
 });
-
-describe('generic test runner', () => {
-	it('should be a placeholder', async () => {
-		assert.equal(1 + 1, 2);
-	});
+after('drop database collections', async () => {
+	await Database.Close();
 });
