@@ -4,6 +4,7 @@ import type { IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { Player } from './Player';
 
+@modelOptions({ schemaOptions: { _id: false } })
 class Guess {
 
 	@prop({ required: true })
