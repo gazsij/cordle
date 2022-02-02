@@ -72,3 +72,12 @@ export interface IReplyOptions {
 	button?: MessageButton,
 	ephemeral?: boolean
 }
+
+export interface IStatistics {
+	gamesPlayed: number
+	winPercentage: number
+	currentStreak: number
+	maxStreak: number
+	today: number | undefined
+	guesses: Map<number, number>
+}

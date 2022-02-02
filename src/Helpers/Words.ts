@@ -1,6 +1,7 @@
 import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
-import { IGame, IGuess, IReplyOptions } from '../Types/Abstract';
+
+import { IGame, IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { PlayerRepo } from '../Repositories/PlayerRepo';
 import { Format } from './Format';
@@ -75,5 +76,81 @@ export class Words {
 		const emojis = Format.GuessesToEmoji(game.guesses);
 
 		return { msg: `${name}'s Results\n Word ${currentDay} ${game.guesses.length}/6\n\n${emojis}` };
+	}
+
+	public static async GetStatistics(discordID: string): Promise<IStatistics | undefined> {
+		const player = await PlayerRepo.GetPlayer(discordID);
+
+		if (!player)
+			return;
+
+		const finished = player.games.filter(game => game.finished);
+
+		if (finished.length == 0)
+			return;
+
+		const currentDay = Words.GetCurrentDay();
+		const daysPlayed = finished.map(game => game.day);
+		const lastPlayed = Math.max(...daysPlayed);
+		const lostStreak = currentDay - lastPlayed > 1;
+
+		const streaks = Words.FindStreaks(daysPlayed, currentDay, lostStreak);
+
+		const todaysGame = player.games.find(game => game.day == currentDay && game.success);
+
+		const won = finished.filter(game => game.success);
+
+		const distribution = won
+			.map(game => game.guesses.length)
+			.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map<number, number>());
+
+		return {
+			gamesPlayed: finished.length,
+			winPercentage: Math.round((won.length / finished.length) * 100),
+			currentStreak: streaks.currentStreak,
+			maxStreak: streaks.maxStreak,
+			today: todaysGame?.guesses.length,
+			guesses: distribution
+		};
+	}
+
+	private static FindStreaks(daysPlayed: number[], currentDay: number, lostStreak: boolean) {
+		let max = 0;
+		const S = new Set(daysPlayed);
+
+		// check each possible sequence from
+		// the start then update optimal length
+		for (let i = 0; i < daysPlayed.length; i++) {
+
+			// if current element is the starting
+			// element of a sequence
+			if (S.has(daysPlayed[i] - 1))
+				continue;
+
+			// Then check for next elements
+			// in the sequence
+			let j = daysPlayed[i];
+			while (S.has(j))
+				j++;
+
+			// update optimal length if
+			// this length is more
+			max = Math.max(max, j - daysPlayed[i]);
+		}
+
+
+		let streak = 0;
+		if (!lostStreak) {
+			streak = currentDay;
+			while (S.has(streak))
+				streak++;
+
+			streak -= (currentDay - 1);
+		}
+
+		return {
+			currentStreak: streak,
+			maxStreak: max
+		};
 	}
 }
