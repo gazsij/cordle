@@ -57,13 +57,6 @@ export interface IGuess {
 	letter: string
 }
 
-export interface IGame {
-	day: number
-	success: boolean
-	finished: boolean
-	guesses: IGuess[][]
-}
-
 export interface IReplyOptions {
 	msg: string | string[],
 	embed?: MessageEmbed,

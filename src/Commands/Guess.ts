@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 
-import { PlayerRepo } from '../Repositories/PlayerRepo';
+import { GameRepo } from '../Repositories/GameRepo';
 import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
 import { ICommand, IReplyOptions } from '../Types/Abstract';
@@ -19,7 +19,7 @@ export default {
 	],
 	execute: async interaction => {
 		const currentDay = Words.GetCurrentDay();
-		const { game } = await PlayerRepo.GetOrCreateGame(interaction.user.id, currentDay);
+		const { game } = await GameRepo.GetOrCreateGame(interaction.user.id, currentDay);
 
 		const word = interaction.options.getString('word', true).toLowerCase();
 		const validation = Words.ValidateGame(game, word);
@@ -29,7 +29,7 @@ export default {
 		const answer = Words.GetAnswer(currentDay);
 		const guess = Words.CheckGuess(word, answer);
 
-		const updatedGame = await PlayerRepo.AddGuess(interaction.user.id, currentDay, guess);
+		const updatedGame = await GameRepo.AddGuess(interaction.user.id, currentDay, guess);
 		const img = Format.GuessesToImage(updatedGame.guesses);
 
 		const footer = updatedGame.success ?
