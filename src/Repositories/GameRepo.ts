@@ -10,7 +10,7 @@ export class GameRepo {
 		if (!player)
 			return null;
 
-		return await GameModel.findOne({ player, day });
+		return GameModel.findOne({ player, day });
 	}
 
 	public static async GetGames(discordID: string) {
@@ -18,7 +18,7 @@ export class GameRepo {
 		if (!player)
 			return null;
 
-		return await GameModel.find({ player });
+		return GameModel.find({ player });
 	}
 
 	public static async GetOrCreateGame(discordID: string, day: number) {
@@ -40,10 +40,10 @@ export class GameRepo {
 		});
 
 		player.games.push(newGame._id);
-		await player.save();
+		const savedPlayer = await player.save();
 
 		return {
-			player,
+			player: savedPlayer,
 			game: newGame
 		};
 	}
@@ -61,8 +61,6 @@ export class GameRepo {
 			game.success = true;
 		}
 
-		await game.save();
-
-		return game;
+		return game.save();
 	}
 }
