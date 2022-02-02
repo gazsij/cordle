@@ -1,10 +1,11 @@
 import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
 
-import { IGame, IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
+import { IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
-import { PlayerRepo } from '../Repositories/PlayerRepo';
+import { GameRepo } from '../Repositories/GameRepo';
 import { Format } from './Format';
+import { Game } from '@Models/Game';
 
 export class Words {
 	private static readonly Answers: string[] = answers;
@@ -47,7 +48,7 @@ export class Words {
 		return result;
 	}
 
-	public static ValidateGame(game: IGame, word: string) {
+	public static ValidateGame(game: Game, word: string) {
 		if (game.finished)
 			return { msg: 'You have already completed today\'s word.', valid: false };
 
@@ -68,9 +69,9 @@ export class Words {
 
 	public static async ShareGame(discordID: string, name: string): Promise<IReplyOptions> {
 		const currentDay = Words.GetCurrentDay();
-		const { game } = await PlayerRepo.GetOrCreateGame(discordID, currentDay);
+		const game = await GameRepo.GetGame(discordID, currentDay);
 
-		if (!game.finished)
+		if (!game || !game.finished)
 			return { msg: 'You have not completed today\'s word yet.', ephemeral: true };
 
 		const emojis = Format.GuessesToEmoji(game.guesses);
@@ -79,12 +80,12 @@ export class Words {
 	}
 
 	public static async GetStatistics(discordID: string): Promise<IStatistics | undefined> {
-		const player = await PlayerRepo.GetPlayer(discordID);
+		const games = await GameRepo.GetGames(discordID);
 
-		if (!player)
+		if (!games)
 			return;
 
-		const finished = player.games.filter(game => game.finished);
+		const finished = games.filter(game => game.finished);
 
 		if (finished.length == 0)
 			return;
@@ -96,7 +97,7 @@ export class Words {
 
 		const streaks = Words.FindStreaks(daysPlayed, currentDay, lostStreak);
 
-		const todaysGame = player.games.find(game => game.day == currentDay && game.success);
+		const todaysGame = games.find(game => game.day == currentDay && game.success);
 
 		const won = finished.filter(game => game.success);
 

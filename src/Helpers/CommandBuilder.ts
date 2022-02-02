@@ -2,7 +2,7 @@ import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOpti
 import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v9';
 import { Collection } from 'discord.js';
-import { ICommand, ICommandOption, ISubCommandGroup } from '../Types/Abstract';
+import { ICommand, ICommandOption, ISubCommandGroup } from '../Types/Builders';
 import { Config } from './Config';
 
 type SlashCommandOption = SlashCommandStringOption

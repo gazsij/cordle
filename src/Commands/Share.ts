@@ -2,7 +2,7 @@ import { GuildMember } from 'discord.js';
 
 import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
-import { ICommand } from '../Types/Abstract';
+import { ICommand } from '../Types/Builders';
 
 export default {
 	name: 'share',
