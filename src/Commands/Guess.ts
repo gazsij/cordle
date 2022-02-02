@@ -41,7 +41,6 @@ export default {
 		const replyOptions: IReplyOptions = {
 			msg: `Word ${currentDay} ${updatedGame.guesses.length}/6\n\n${footer}`,
 			attachment: img,
-			button: undefined,
 			ephemeral: true
 		};
 

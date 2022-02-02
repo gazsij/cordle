@@ -1,9 +1,12 @@
 import { InteractionReplyOptions, MessageActionRow, MessageAttachment, MessageEmbed } from 'discord.js';
-import { createCanvas } from 'canvas';
+import { createCanvas, registerFont } from 'canvas';
 
 import { Config } from './Config';
-import type { IGuess, IReplyOptions } from '../Types/Abstract';
+import type { IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
+
+registerFont('./static/ClearSans-Regular.ttf', { family: 'ClearSans' });
+registerFont('./static/ClearSans-Bold.ttf', { family: 'ClearSans', weight: 'bold' });
 
 export class Format {
 
@@ -60,13 +63,10 @@ export class Format {
 		const canvas = createCanvas(350, 420);
 		const ctx = canvas.getContext('2d');
 
-		ctx.fillStyle = '#121213';
-		ctx.rect(0, 0, 350, 420);
-
 		ctx.lineWidth = 2;
 		ctx.strokeStyle = '#565758';
 
-		ctx.font = '32px Sans';
+		ctx.font = '32px ClearSans';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 
@@ -107,5 +107,56 @@ export class Format {
 		}
 
 		return new MessageAttachment(canvas.toBuffer(), 'game.png');
+	}
+
+	public static StatisticsToImage(stats: IStatistics): MessageAttachment {
+		//const canvas = createCanvas(420, 180);
+		const canvas = createCanvas(420, 340);
+		const ctx = canvas.getContext('2d');
+
+		ctx.fillStyle = '#d7dae0';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		ctx.font = 'bold 20px ClearSans';
+		ctx.fillText('STATISTICS', 210, 30);
+
+		ctx.font = '40px ClearSans';
+		ctx.fillText(stats.gamesPlayed.toString(), 120, 70);
+		ctx.fillText(stats.winPercentage.toString(), 180, 70);
+		ctx.fillText(stats.currentStreak.toString(), 240, 70);
+		ctx.fillText(stats.maxStreak.toString(), 300, 70);
+
+		ctx.font = 'bold 14px ClearSans';
+		ctx.fillText('Played', 120, 100);
+		ctx.fillText('Win %', 180, 100);
+		ctx.fillText('Current', 240, 100);
+		ctx.fillText('Streak', 240, 115);
+		ctx.fillText('Max', 300, 100);
+		ctx.fillText('Streak', 300, 115);
+
+		ctx.font = 'bold 20px ClearSans';
+		ctx.fillText('GUESS DISTRIBUTION', 210, 150);
+
+		ctx.font = 'bold 12px ClearSans';
+		ctx.textAlign = 'right';
+		ctx.textBaseline = 'top';
+
+		const mostCommonGuess = Math.max(...[...stats.guesses].map(([, value]) => value));
+
+		for (let guess = 1; guess < 7; guess++) {
+			const count = stats.guesses.get(guess) ?? 0;
+			const width = Math.max(0.07, Math.round(count / mostCommonGuess * 100) / 100) * 370;
+			const y = 160 + (24 * guess);
+
+			ctx.fillStyle = stats.today == guess ? '#538d4e' : '#565758';
+			ctx.fillRect(30, y, width, 20);
+
+			ctx.fillStyle = '#d7dae0';
+			ctx.fillText(guess.toString(), 20, y);
+			ctx.fillText(count.toString(), 20 + width, y);
+		}
+
+		return new MessageAttachment(canvas.toBuffer(), 'stats.png');
 	}
 }
