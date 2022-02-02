@@ -3,7 +3,7 @@ import { PlayerModel } from '../Models';
 export class PlayerRepo {
 
 	public static async GetPlayer(discordID: string) {
-		return await PlayerModel.findOne({ discordID });
+		return PlayerModel.findOne({ discordID });
 	}
 
 	public static async GetOrCreatePlayer(discordID: string) {
@@ -11,7 +11,7 @@ export class PlayerRepo {
 		if (player)
 			return player;
 
-		return await PlayerModel.create({
+		return PlayerModel.create({
 			discordID,
 			games: []
 		});
