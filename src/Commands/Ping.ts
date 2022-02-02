@@ -1,5 +1,5 @@
 import { Format } from '../Helpers/Format';
-import { ICommand } from '../Types/Abstract';
+import { ICommand } from '../Types/Builders';
 
 export default {
 	name: 'ping',

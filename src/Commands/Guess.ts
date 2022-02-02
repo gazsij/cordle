@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import { GameRepo } from '../Repositories/GameRepo';
 import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
-import { ICommand, IReplyOptions } from '../Types/Abstract';
+import { IReplyOptions } from '../Types/Abstract';
+import { ICommand } from '../Types/Builders';
 import { MessageButton } from 'discord.js';
 
 export default {
