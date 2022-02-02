@@ -5,7 +5,7 @@ import { IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { GameRepo } from '../Repositories/GameRepo';
 import { Format } from './Format';
-import { Game } from '@Models/Game';
+import { Game } from '../Models/Game';
 
 export class Words {
 	private static readonly Answers: string[] = answers;
