@@ -3,6 +3,7 @@ import { index, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import type { IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { Player } from './Player';
+import { Server } from './Server';
 
 @modelOptions({ schemaOptions: { _id: false } })
 class Guess {
@@ -14,12 +15,15 @@ class Guess {
 	public letter: string;
 }
 
-@index({ player: 1, day: 1 }, { unique: true })
+@index({ player: 1, server: 1, day: 1 }, { unique: true })
 @modelOptions({ schemaOptions: { collection: 'games' } })
 export class Game {
 
-	@prop({ ref: () => Player })
+	@prop({ ref: () => Player, required: true })
 	public player: Ref<Player>;
+
+	@prop({ ref: () => Server })
+	public server?: Ref<Server>;
 
 	@prop({ required: true })
 	public day: number;
