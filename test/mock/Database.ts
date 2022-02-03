@@ -1,7 +1,7 @@
 import mongoose, { Mongoose, Connection } from 'mongoose';
 
 const connection = 'mongodb://localhost:27017/dev';
-const collections = ['players'];
+const collections = ['players', 'games'];
 
 export class Database {
 	private static mongooseInstance: Mongoose;
