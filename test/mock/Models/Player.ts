@@ -42,19 +42,19 @@ class Game {
 	public guesses: IGuess[][];
 }
 
-@index({ discordID: 1 }, { unique: true })
+@index({ discord_id: 1 }, { unique: true })
 @modelOptions({ schemaOptions: { collection: 'players' } })
 class PlayerModel {
 
 	@prop({ required: true, unique: true })
-	public discordID: string;
+	public discord_id: string;
 
 	@prop({ type: () => [Game], default: [] })
 	public games: IGame[];
 }
 
 export interface IPlayer {
-	discordID: string;
+	discord_id: string;
 	games: IGame[];
 }
 

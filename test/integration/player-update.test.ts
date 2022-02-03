@@ -7,7 +7,7 @@ describe('integration', () => {
 		const id = discordID();
 		it('should create a new suer', async () => {
 			const newPlayer = await Player.create({
-				discordID: id,
+				discord_id: id,
 				games: []
 			});
 			const newGame = {
@@ -20,12 +20,12 @@ describe('integration', () => {
 			await newPlayer.save();
 		});
 		it('should find a user by id', async () => {
-			const user = await Player.findOne({ discordID: id });
+			const user = await Player.findOne({ discord_id: id });
 			assert.exists(user);
-			assert.equal(user?.discordID, id);
+			assert.equal(user?.discord_id, id);
 		});
 		it('should enforce uppercase constraint', async () => {
-			const player = await Player.findOne({ discordID: id });
+			const player = await Player.findOne({ discord_id: id });
 			player?.games.push({
 				day: 2,
 				success: false,
