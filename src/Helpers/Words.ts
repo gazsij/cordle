@@ -1,8 +1,11 @@
+import { Chance } from 'chance';
+
 import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
 
-import { IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
+import { IGuess, IReplyOptions, IServer, IStatistics } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
+import { ServerRepo } from '../Repositories/ServerRepo';
 import { GameRepo } from '../Repositories/GameRepo';
 import { Format } from './Format';
 import { Game } from '../Models/Game';
@@ -14,14 +17,31 @@ export class Words {
 
 	private static readonly StartDate: number = new Date(2021, 5, 19).getTime();
 
-	public static GetCurrentDay(): number {
+	private static readonly Affirmations = ['Genius', 'Magnificent', 'Impressive', 'Splendid', 'Great', 'Phew'];
+
+	public static GetCurrentDay(start?: Date) {
 		const today = new Date().setHours(0, 0, 0, 0);
-		const diff = (Words.StartDate - today) / (24 * 60 * 60 * 1000);
-		return Math.round(Math.abs(diff));
+		const beginning = (start?.setHours(0, 0, 0, 0) ?? Words.StartDate);
+		const diff = (beginning - today) / (24 * 60 * 60 * 1000);
+		return Math.round(Math.abs(diff)) + (start ? 1 : 0);
 	}
 
-	public static GetAnswer(day: number): string {
-		return Words.Answers[day];
+	public static GetAnswer(day: number, server?: IServer) {
+		if (!server)
+			return Words.Answers[day];
+
+		return new Chance(`${server.discord_id}-${server.date_joined.getTime()}`).shuffle(Words.Answers)[day];
+	}
+
+	public static GetCompletionMessage(game: Game, answer: string) {
+		const keyboard = Format.KeyboardEmoji(game.guesses);
+		if (game.success)
+			return `${Words.Affirmations[game.guesses.length - 1]}! You completed today's word!\n\n${keyboard}`;
+
+		if (game.finished)
+			return `Today's word was \`${answer.toUpperCase()}\`.\n\n${keyboard}`;
+
+		return keyboard;
 	}
 
 	public static CheckGuess(word: string, answer: string): IGuess[] {
@@ -48,12 +68,12 @@ export class Words {
 		return result;
 	}
 
-	public static ValidateGame(game: Game, word: string) {
+	public static ValidateGame(game: Game, word: string, type: string) {
 		if (game.finished)
-			return { msg: 'You have already completed today\'s word.', valid: false };
+			return { msg: `You have already completed today's ${type} word.`, valid: false };
 
 		if (game.guesses.length >= 6)
-			return { msg: 'You have already used all guesses for today\'s word.', valid: false };
+			return { msg: `You have already used all guesses for today's ${type} word.`, valid: false };
 
 		if (!word)
 			return { msg: 'You did not enter a word.', valid: false };
@@ -67,20 +87,28 @@ export class Words {
 		return { valid: true, msg: '' };
 	}
 
-	public static async ShareGame(discordID: string, name: string): Promise<IReplyOptions> {
-		const currentDay = Words.GetCurrentDay();
-		const game = await GameRepo.GetGame(discordID, currentDay);
+	public static async ShareGame(playerID: string, name: string, serverID?: string): Promise<IReplyOptions> {
+		let server;
+		if (serverID) {
+			server = await ServerRepo.GetServer(serverID);
+			if (!server)
+				return { msg: 'You have not completed today\'s server word yet.', ephemeral: true };
+		}
+
+		const type = server ? 'Server' : 'Global';
+		const currentDay = Words.GetCurrentDay(server?.date_joined);
+		const game = await GameRepo.GetGame(playerID, currentDay, serverID);
 
 		if (!game || !game.finished)
-			return { msg: 'You have not completed today\'s word yet.', ephemeral: true };
+			return { msg: `You have not completed today's ${type} word yet.`, ephemeral: true };
 
 		const emojis = Format.GuessesToEmoji(game.guesses);
 
-		return { msg: `${name}'s Results\n Word ${currentDay} ${game.guesses.length}/6\n\n${emojis}` };
+		return { msg: `${name}'s Results\n${type} Word ${currentDay} ${game.guesses.length}/6\n\n${emojis}` };
 	}
 
-	public static async GetStatistics(discordID: string): Promise<IStatistics | undefined> {
-		const games = await GameRepo.GetGames(discordID);
+	public static async GetStatistics(playerID: string, serverID?: string): Promise<IStatistics | undefined> {
+		const games = await GameRepo.GetGames(playerID, serverID);
 
 		if (!games)
 			return;
@@ -90,7 +118,11 @@ export class Words {
 		if (finished.length == 0)
 			return;
 
-		const currentDay = Words.GetCurrentDay();
+		let server;
+		if (serverID)
+			server = await ServerRepo.GetServer(serverID);
+
+		const currentDay = Words.GetCurrentDay(server?.date_joined);
 		const daysPlayed = finished.map(game => game.day);
 		const lastPlayed = Math.max(...daysPlayed);
 		const lostStreak = currentDay - lastPlayed > 1;
@@ -144,9 +176,9 @@ export class Words {
 		if (!lostStreak) {
 			streak = currentDay;
 			while (S.has(streak))
-				streak++;
+				streak--;
 
-			streak -= (currentDay - 1);
+			streak = currentDay - streak;
 		}
 
 		return {

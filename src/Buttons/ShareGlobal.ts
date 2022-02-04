@@ -5,8 +5,11 @@ import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
 
 export default {
-	customID: 'share',
+	customID: 'share-global',
 	execute: async interaction => {
+		if (interaction.replied)
+			return;
+
 		const member = interaction.member as GuildMember;
 		const name = member?.nickname ?? interaction.user.tag;
 		const reply = await Words.ShareGame(interaction.user.id, name);

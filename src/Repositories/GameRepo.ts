@@ -2,37 +2,58 @@ import { GameModel } from '../Models';
 import type { IGuess } from '../Types/Abstract';
 import { GuessState } from '../Types/Constants';
 import { PlayerRepo } from './PlayerRepo';
+import { ServerRepo } from './ServerRepo';
 
 export class GameRepo {
 
-	public static async GetGame(discordID: string, day: number) {
-		const player = await PlayerRepo.GetPlayer(discordID);
+	public static async GetGame(playerID: string, day: number, serverID?: string) {
+		const player = await PlayerRepo.GetPlayer(playerID);
 		if (!player)
 			return null;
 
-		return GameModel.findOne({ player, day });
+		let server;
+		if (serverID) {
+			server = await ServerRepo.GetServer(serverID);
+			if (!server)
+				return null;
+		}
+
+		return GameModel.findOne({ player, server, day });
 	}
 
-	public static async GetGames(discordID: string) {
-		const player = await PlayerRepo.GetPlayer(discordID);
+	public static async GetGames(playerID: string, serverID?: string) {
+		const player = await PlayerRepo.GetPlayer(playerID);
 		if (!player)
 			return null;
 
-		return GameModel.find({ player });
+		let server;
+		if (serverID) {
+			server = await ServerRepo.GetServer(serverID);
+			if (!server)
+				return null;
+		}
+
+		return GameModel.find({ player, server });
 	}
 
-	public static async GetOrCreateGame(discordID: string, day: number) {
-		const player = await PlayerRepo.GetOrCreatePlayer(discordID);
+	public static async GetOrCreateGame(playerID: string, day: number, serverID?: string) {
+		const player = await PlayerRepo.GetOrCreatePlayer(playerID);
 
-		const game = await GameModel.findOne({ player, day });
+		let server;
+		if (serverID)
+			server = await ServerRepo.GetOrCreatServer(serverID);
+
+		const game = await GameModel.findOne({ player, server, day });
 		if (game)
 			return {
 				player,
+				server,
 				game
 			};
 
 		const newGame = await GameModel.create({
 			player,
+			server,
 			day,
 			success: false,
 			finished: false,
@@ -42,14 +63,21 @@ export class GameRepo {
 		player.games.push(newGame._id);
 		const savedPlayer = await player.save();
 
+		let savedServer;
+		if (server) {
+			server.games.push(newGame._id);
+			savedServer = await server.save();
+		}
+
 		return {
 			player: savedPlayer,
+			server: savedServer,
 			game: newGame
 		};
 	}
 
-	public static async AddGuess(discordID: string, day: number, guess: IGuess[]) {
-		const { game } = await GameRepo.GetOrCreateGame(discordID, day);
+	public static async AddGuess(playerID: string, day: number, guess: IGuess[], serverID?: string) {
+		const { game } = await GameRepo.GetOrCreateGame(playerID, day, serverID);
 
 		game.guesses.push(guess);
 
