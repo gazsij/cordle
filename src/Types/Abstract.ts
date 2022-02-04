@@ -7,6 +7,11 @@ export interface IGuess {
 	letter: string
 }
 
+export interface IServer {
+	discord_id: string
+	date_joined: Date
+}
+
 export interface IReplyOptions {
 	msg: string | string[],
 	embed?: MessageEmbed,

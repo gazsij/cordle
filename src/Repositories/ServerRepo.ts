@@ -13,7 +13,7 @@ export class ServerRepo {
 
 		return ServerModel.create({
 			discord_id: discordID,
-			startDate: new Date(),
+			date_joined: new Date(),
 			games: []
 		});
 	}
