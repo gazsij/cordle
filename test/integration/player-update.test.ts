@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import { Player, discordID } from '../mock';
+import { PlayerModel as Player, GameModel as Game, discordID } from '../mock';
 
 describe('integration', () => {
 	describe('player update', () => {
@@ -10,13 +10,6 @@ describe('integration', () => {
 				discordID: id,
 				games: []
 			});
-			const newGame = {
-				day: 1,
-				success: false,
-				finished: false,
-				guesses: [[]]
-			};
-			newPlayer.games.push(newGame);
 			await newPlayer.save();
 		});
 		it('should find a user by id', async () => {
@@ -24,25 +17,39 @@ describe('integration', () => {
 			assert.exists(user);
 			assert.equal(user?.discordID, id);
 		});
-		it('should enforce uppercase constraint', async () => {
+		it('should attach a game to a user', async () => {
+			const user = await Player.findOne({ discordID: id });
+			assert.exists(user);
+			assert.equal(user?.discordID, id);
+		});
+		it('should create many games for a user', async () => {
 			const player = await Player.findOne({ discordID: id });
-			player?.games.push({
-				day: 2,
-				success: false,
-				finished: false,
-				guesses: [[
-					{ letter: 'W', state: 0 }, { letter: 'e', state: 0 }, { letter: 'A', state: 0 }, { letter: 'r', state: 0 }, { letter: 'y', state: 0 }
-				]]
-			});
-			const updated = await player?.save();
-			updated?.games.every((game) => {
-				game.guesses.every((guess) => {
-					guess.every(({ letter, state }) => {
-						assert.equal(letter === letter.toUpperCase(), true);
-						assert.isNumber(state);
+			if (!player) {
+				throw new Error('player not found');
+			}
+
+			const newGames = await Promise.all(
+				Array.from({ length: 20 }).map(async () => {
+					return Game.create({
+						player,
+						day: discordID(), // just need a unique num here
+						success: false,
+						finished: false,
+						guesses: [[
+							{ letter: 'W', state: 0 },
+							{ letter: 'e', state: 0 },
+							{ letter: 'A', state: 0 },
+							{ letter: 'r', state: 0 },
+							{ letter: 'y', state: 0 }
+						]]
 					});
-				});
-			});
+				})
+			);
+			for (const game of newGames) {
+				player?.games?.push(game._id);
+			}
+			const { games } = await (await player.save()).populate('games');
+			assert.equal(20, games.length);
 		});
 	});
 });
