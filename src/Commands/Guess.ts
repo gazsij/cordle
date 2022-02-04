@@ -24,11 +24,7 @@ const execute = async (interaction: CommandInteraction, server?: IServer) => {
 	const updatedGame = await GameRepo.AddGuess(interaction.user.id, currentDay, guess, server?.discord_id);
 	const img = Format.GuessesToImage(updatedGame.guesses);
 
-	const footer = updatedGame.success ?
-		'Congratulations on completing today\'s word!' :
-		updatedGame.finished ?
-			`Today's word was \`${answer.toUpperCase()}\`.` :
-			'';
+	const footer = Words.GetCompletionMessage(updatedGame, answer.toUpperCase());
 
 	const replyOptions: IReplyOptions = {
 		msg: `${type} Word ${currentDay} ${updatedGame.guesses.length}/6\n\n${footer}`,
@@ -39,7 +35,7 @@ const execute = async (interaction: CommandInteraction, server?: IServer) => {
 	if (updatedGame.finished)
 		replyOptions.button = new MessageButton()
 			.setLabel('Share')
-			.setStyle('PRIMARY')
+			.setStyle('SUCCESS')
 			.setCustomId(`share-${interaction.options.getSubcommand(true)}`);
 
 	return interaction.reply(Format.Reply(replyOptions));

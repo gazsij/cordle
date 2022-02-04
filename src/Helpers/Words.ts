@@ -17,6 +17,8 @@ export class Words {
 
 	private static readonly StartDate: number = new Date(2021, 5, 19).getTime();
 
+	private static readonly Affirmations = ['Genius', 'Magnificent', 'Impressive', 'Splendid', 'Great', 'Phew'];
+
 	public static GetCurrentDay(start?: Date) {
 		const today = new Date().setHours(0, 0, 0, 0);
 		const beginning = (start?.setHours(0, 0, 0, 0) ?? Words.StartDate);
@@ -29,6 +31,16 @@ export class Words {
 			return Words.Answers[day];
 
 		return new Chance(`${server.discord_id}-${server.date_joined.getTime()}`).shuffle(Words.Answers)[day];
+	}
+
+	public static GetCompletionMessage(game: Game, answer: string) {
+		if (game.success)
+			return `${Words.Affirmations[game.guesses.length - 1]}! You completed today's word!`;
+
+		if (game.finished)
+			return `Today's word was \`${answer.toUpperCase()}\`.`;
+
+		return '';
 	}
 
 	public static CheckGuess(word: string, answer: string): IGuess[] {
