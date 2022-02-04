@@ -34,13 +34,14 @@ export class Words {
 	}
 
 	public static GetCompletionMessage(game: Game, answer: string) {
+		const keyboard = Format.KeyboardEmoji(game.guesses);
 		if (game.success)
-			return `${Words.Affirmations[game.guesses.length - 1]}! You completed today's word!`;
+			return `${Words.Affirmations[game.guesses.length - 1]}! You completed today's word!\n\n${keyboard}`;
 
 		if (game.finished)
-			return `Today's word was \`${answer.toUpperCase()}\`.`;
+			return `Today's word was \`${answer.toUpperCase()}\`.\n\n${keyboard}`;
 
-		return '';
+		return keyboard;
 	}
 
 	public static CheckGuess(word: string, answer: string): IGuess[] {
@@ -175,9 +176,9 @@ export class Words {
 		if (!lostStreak) {
 			streak = currentDay;
 			while (S.has(streak))
-				streak++;
+				streak--;
 
-			streak -= (currentDay - 1);
+			streak = currentDay - streak;
 		}
 
 		return {

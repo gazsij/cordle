@@ -10,6 +10,12 @@ registerFont('./static/ClearSans-Bold.ttf', { family: 'ClearSans', weight: 'bold
 
 export class Format {
 
+	private static Keyboard = [
+		['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+		['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+		['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+	];
+
 	public static Embed(title?: string): MessageEmbed {
 		const embed = new MessageEmbed()
 			.setColor(Config.BOT_COLOR)
@@ -24,10 +30,7 @@ export class Format {
 	public static Reply(options: IReplyOptions): InteractionReplyOptions {
 		const embed = options.embed ?? Format.Embed(options.title);
 
-		if (Array.isArray(options.msg))
-			embed.setDescription(options.msg.join('\n'));
-		else
-			embed.setDescription(options.msg);
+		embed.setDescription(Array.isArray(options.msg) ? options.msg.join('\n') : options.msg);
 
 		const reply: InteractionReplyOptions = { embeds: [embed], ephemeral: options.ephemeral };
 
@@ -57,6 +60,31 @@ export class Format {
 				}
 			}).join('');
 		}).join('\n');
+	}
+
+	public static KeyboardEmoji(guesses: IGuess[][]): string {
+		const used = guesses.flat();
+		const keys: string[] = [];
+		for (let row = 0; row < Format.Keyboard.length; row++) {
+			const letters = Format.Keyboard[row];
+
+			for (let col = 0; col < letters.length; col++) {
+				const letter = letters[col];
+
+				if (used.some(l => l.letter == letter && l.state == GuessState.Correct))
+					keys.push('🟩');
+				else if (used.some(l => l.letter == letter && l.state == GuessState.Present))
+					keys.push('🟨');
+				else if (used.some(l => l.letter == letter && l.state == GuessState.Absent))
+					keys.push('⬛');
+				else
+					keys.push(`:regional_indicator_${letter.toLowerCase()}:`);
+			}
+
+			keys.push(`\n${'\u200b '.repeat(3 * (row + 1))}`);
+		}
+
+		return keys.join(' ');
 	}
 
 	public static GuessesToImage(guesses: IGuess[][]): MessageAttachment {
@@ -110,7 +138,6 @@ export class Format {
 	}
 
 	public static StatisticsToImage(stats: IStatistics): MessageAttachment {
-		//const canvas = createCanvas(420, 180);
 		const canvas = createCanvas(420, 340);
 		const ctx = canvas.getContext('2d');
 
