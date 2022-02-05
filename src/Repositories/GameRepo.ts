@@ -1,6 +1,5 @@
 import { GameModel } from '../Models';
-import type { IGuess } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { IGuess, GuessState } from '../Types';
 import { PlayerRepo } from './PlayerRepo';
 import { ServerRepo } from './ServerRepo';
 

@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
 
-import { IButton } from '../Types/Builders';
+import { IButton } from '../Types';
 import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
 

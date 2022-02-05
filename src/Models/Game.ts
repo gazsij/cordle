@@ -1,7 +1,6 @@
 import { index, modelOptions, prop, Ref } from '@typegoose/typegoose';
 
-import type { IGuess } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { IGuess, GuessState } from '../Types';
 import { Player } from './Player';
 import { Server } from './Server';
 

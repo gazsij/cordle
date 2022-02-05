@@ -3,8 +3,7 @@ import { Chance } from 'chance';
 import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
 
-import { IGuess, IReplyOptions, IServer, IStatistics } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { GuessState, IGuess, IReplyOptions, IServer, IStatistics } from '../Types';
 import { ServerRepo } from '../Repositories/ServerRepo';
 import { GameRepo } from '../Repositories/GameRepo';
 import { Format } from './Format';

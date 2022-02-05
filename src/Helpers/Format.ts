@@ -2,8 +2,7 @@ import { InteractionReplyOptions, MessageActionRow, MessageAttachment, MessageEm
 import { createCanvas, registerFont } from 'canvas';
 
 import { Config } from './Config';
-import type { IGuess, IReplyOptions, IStatistics } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { IGuess, IReplyOptions, IStatistics, GuessState } from '../Types';
 
 registerFont('./static/ClearSans-Regular.ttf', { family: 'ClearSans' });
 registerFont('./static/ClearSans-Bold.ttf', { family: 'ClearSans', weight: 'bold' });
