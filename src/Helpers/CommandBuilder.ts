@@ -14,7 +14,6 @@ type SlashCommandOption = SlashCommandStringOption
 	| SlashCommandRoleOption
 	| SlashCommandMentionableOption;
 
-
 export class CommandBuilder {
 
 	static AddOptionDetails<T>(option: ICommandOption, builder: SlashCommandOption): T {
