@@ -1,0 +1,28 @@
+name: Register Commands
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  build-test-enironment:
+    name: Register Commands Api
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm install --frozen-lockfile
+
+      - name: Run Script
+        run: npm run ts ./scripts/register-commands.ts

@@ -5,6 +5,7 @@
   "main": "./build/index.js",
   "type": "commonjs",
   "scripts": {
+	"ts": "ts-node",
     "lint": "eslint --fix --ext .ts,.tsx .",
     "prepare": "husky install",
     "test": "mocha",
