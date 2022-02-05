@@ -13,8 +13,8 @@ export type {
 	ICommandChoice,
 	IButtonExport,
 	IButton
-} from "./Builders"
+} from './Builders';
 export {
 	Env,
 	GuessState
-} from "./Constants"
+} from './Constants';
