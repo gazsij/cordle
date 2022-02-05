@@ -1,6 +1,5 @@
 import { GameModel } from '../Models';
-import type { IGuess } from '../Types/Abstract';
-import { GuessState } from '../Types/Constants';
+import { IGuess, GuessState } from '../Types';
 import { PlayerRepo } from './PlayerRepo';
 import { ServerRepo } from './ServerRepo';
 
@@ -26,12 +25,8 @@ export class GameRepo {
 		if (!player)
 			return null;
 
-		let server;
-		if (serverID) {
-			server = await ServerRepo.GetServer(serverID);
-			if (!server)
-				return null;
-		}
+		const server = serverID && await ServerRepo.GetServer(serverID);
+		if (!server) return null;
 
 		return GameModel.find({ player, server });
 	}
@@ -39,9 +34,7 @@ export class GameRepo {
 	public static async GetOrCreateGame(playerID: string, day: number, serverID?: string) {
 		const player = await PlayerRepo.GetOrCreatePlayer(playerID);
 
-		let server;
-		if (serverID)
-			server = await ServerRepo.GetOrCreatServer(serverID);
+		const server = serverID && await ServerRepo.GetOrCreatServer(serverID);
 
 		const game = await GameModel.findOne({ player, server, day });
 		if (game)

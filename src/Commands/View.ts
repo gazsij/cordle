@@ -4,8 +4,7 @@ import { ServerRepo } from '../Repositories/ServerRepo';
 import { GameRepo } from '../Repositories/GameRepo';
 import { Words } from '../Helpers/Words';
 import { Format } from '../Helpers/Format';
-import { IReplyOptions, IServer } from '../Types/Abstract';
-import { ICommand } from '../Types/Builders';
+import { IReplyOptions, IServer, ICommand } from '../Types';
 
 const execute = async (interaction: CommandInteraction, server?: IServer) => {
 	const type = server ? 'Server' : 'Global';

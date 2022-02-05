@@ -1,7 +1,7 @@
 import path from 'path';
 import { ColorResolvable } from 'discord.js';
 
-import { Env } from '../Types/Constants';
+import { Env } from '../Types';
 
 export class Config {
 	static readonly NODE_ENV = <Env>process.env.NODE_ENV ?? Env.dev;
