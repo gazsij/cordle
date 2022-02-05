@@ -1,10 +1,8 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import { CommandInteraction, MessageButton } from 'discord.js';
 
-import { ServerRepo } from '../Repositories/ServerRepo';
-import { GameRepo } from '../Repositories/GameRepo';
-import { Words } from '../Helpers/Words';
-import { Format } from '../Helpers/Format';
+import { ServerRepo, GameRepo } from '../Repositories';
+import { Words, Format } from '../Helpers';
 import { IReplyOptions, IServer, ICommand } from '../Types';
 
 const execute = async (interaction: CommandInteraction, server?: IServer) => {

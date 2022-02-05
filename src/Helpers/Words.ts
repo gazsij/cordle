@@ -4,8 +4,7 @@ import answers from '../Static/answers.json';
 import guesses from '../Static/guesses.json';
 
 import { GuessState, IGuess, IReplyOptions, IServer, IStatistics } from '../Types';
-import { ServerRepo } from '../Repositories/ServerRepo';
-import { GameRepo } from '../Repositories/GameRepo';
+import { ServerRepo, GameRepo } from '../Repositories';
 import { Format } from './Format';
 import { Game } from '../Models/Game';
 
