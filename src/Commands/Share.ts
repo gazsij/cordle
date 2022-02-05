@@ -1,7 +1,6 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
 
-import { Words } from '../Helpers/Words';
-import { Format } from '../Helpers/Format';
+import { Words, Format } from '../Helpers';
 import { ICommand } from '../Types';
 
 const execute = async (interaction: CommandInteraction, serverID?: string) => {
