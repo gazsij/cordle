@@ -1,7 +1,6 @@
 import { GameModel } from '../Models';
 import { IGuess, GuessState } from '../Types';
-import { PlayerRepo } from './PlayerRepo';
-import { ServerRepo } from './ServerRepo';
+import { PlayerRepo, ServerRepo } from './';
 
 export class GameRepo {
 

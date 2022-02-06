@@ -39,7 +39,7 @@ const execute = async (interaction: CommandInteraction, server?: IServer) => {
 };
 
 export default {
-	name: 'guess',
+	customID: 'guess',
 	description: 'Submit a guess for the current word.',
 	subCommands: [
 		{

@@ -1,12 +1,9 @@
-import path from 'path';
-import glob from 'glob';
 import debug from 'debug';
-import { promisify } from 'util';
 import pEvent from 'p-event';
-import { Client, Collection, Intents, Interaction } from 'discord.js';
+import { AutocompleteInteraction, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, Intents, Interaction, SelectMenuInteraction } from 'discord.js';
 
 import { Format, Config, CommandBuilder } from '../Helpers';
-import { IButton, IButtonExport, ICommand, ICommandExport } from '../Types';
+import { IButton, ICommand, ISelectMenu, IAutocomplete, IContextMenu, HandlerType, IImportable } from '../Types';
 
 const logSystem = debug('cordle:bot:system');
 const logEvent = debug('cordle:bot:event');
@@ -15,8 +12,8 @@ const logWarn = debug('cordle:bot:warn');
 
 export class Bot {
 	private static client: Client;
-	static readonly commands = new Collection<string, ICommand>();
-	static readonly buttons = new Collection<string, IButton>();
+
+	private static readonly handlers = new Collection<HandlerType, Collection<string, IImportable>>();
 
 	public static async Setup(): Promise<void> {
 		logSystem('Starting bot...');
@@ -25,36 +22,15 @@ export class Bot {
 			intents: [Intents.FLAGS.GUILDS]
 		});
 
-		const globPromise = promisify(glob);
-		const commandFolder = path.resolve(`${__dirname}/../Commands/*{.js,.ts}`);
-		const commandFiles = await globPromise(commandFolder);
+		for (const type of Object.values(HandlerType))
+			Bot.handlers.set(type, await CommandBuilder.ImportFiles(type));
 
-		for (const file of commandFiles) {
-			const { default: command } = await import(file) as ICommandExport;
-			Bot.commands.set(command.name, command);
-		}
+		const commands = Bot.handlers.get(HandlerType.Commands);
+		if (commands)
+			await CommandBuilder.RegisterCommands(commands as Collection<string, ICommand>);
 
-		logSystem(`Imported ${Bot.commands.size} command(s).`);
-
-		const buttonFolder = path.resolve(`${__dirname}/../Buttons/*{.js,.ts}`);
-		const buttonFiles = await globPromise(buttonFolder);
-
-		for (const file of buttonFiles) {
-			const { default: button } = await import(file) as IButtonExport;
-			Bot.buttons.set(button.customID, button);
-		}
-
-		logSystem(`Imported ${Bot.buttons.size} button(s).`);
-
-		logSystem('Started refreshing application (/) commands.');
-
-		await CommandBuilder.RegisterCommands(Bot.commands);
-
-		logSystem('Successfully reloaded application (/) commands.');
-
-		// handle message and execute commands
-		Bot.client.on('interactionCreate', Bot.SlashHandler);
-		Bot.client.on('interactionCreate', Bot.ButtonHandler);
+		// handle interactions
+		Bot.client.on('interactionCreate', Bot.InteractionHandler);
 
 		// => Bot error and warn handler
 		Bot.client.on('error', logError);
@@ -79,12 +55,29 @@ export class Bot {
 		logEvent('[Discord Bot] Closed client.');
 	}
 
-	private static async SlashHandler(interaction: Interaction): Promise<void> {
-		if (!interaction.isCommand()) return;
+	private static async InteractionHandler(interaction: Interaction): Promise<void> {
+		if (interaction.isButton())
+			return Bot.ButtonHandler(interaction);
 
+		if (interaction.isSelectMenu())
+			return Bot.SelectMenuHandler(interaction);
+
+		if (interaction.isContextMenu())
+			return Bot.ContextMenuHandler(interaction);
+
+		if (interaction.isAutocomplete())
+			return Bot.AutocompleteHandler(interaction);
+
+		if (interaction.isCommand())
+			return Bot.CommandHandler(interaction);
+	}
+
+	private static async CommandHandler(interaction: CommandInteraction): Promise<void> {
 		try {
-			const command = Bot.commands.get(interaction.commandName);
+			const commands = Bot.handlers.get(HandlerType.Commands);
+			if (!commands) throw 'No commands registered.';
 
+			const command = commands.get(interaction.commandName) as ICommand;
 			if (!command) throw `Command ${interaction.commandName} not found.`;
 
 			if (command.subCommands) {
@@ -119,23 +112,73 @@ export class Bot {
 		}
 		catch (error) {
 			logError(error);
-			interaction.reply(Format.Reply({ msg: 'An error occured using this command.  Please try again later.', ephemeral: true }));
+			return interaction.reply(Format.Reply({ msg: 'An error occured using this command.  Please try again later.', ephemeral: true }));
 		}
 	}
 
-	private static async ButtonHandler(interaction: Interaction): Promise<void> {
-		if (!interaction.isButton()) return;
-
+	private static async ButtonHandler(interaction: ButtonInteraction): Promise<void> {
 		try {
-			const button = Bot.buttons.get(interaction.customId);
+			const buttons = Bot.handlers.get(HandlerType.Buttons);
+			if (!buttons) throw 'No buttons registered.';
 
+			const button = buttons.get(interaction.customId) as IButton;
 			if (!button) throw `Button ${interaction.customId} not found.`;
 
 			return button.execute(interaction);
 		}
 		catch (error) {
 			logError(error);
-			interaction.reply(Format.Reply({ msg: 'An error occured using this button.  Please try again later.', ephemeral: true }));
+			return interaction.reply(Format.Reply({ msg: 'An error occured using this button.  Please try again later.', ephemeral: true }));
+		}
+	}
+
+	private static async SelectMenuHandler(interaction: SelectMenuInteraction): Promise<void> {
+		try {
+			const selectMenus = Bot.handlers.get(HandlerType.SelectMenus);
+			if (!selectMenus) throw 'No selectMenus registered.';
+
+			const selectMenu = selectMenus.get(interaction.customId) as ISelectMenu;
+			if (!selectMenu) throw `SelectMenu ${interaction.customId} not found.`;
+
+			return selectMenu.execute(interaction);
+		}
+		catch (error) {
+			logError(error);
+			return interaction.reply(Format.Reply({ msg: 'An error occured using this select menu.  Please try again later.', ephemeral: true }));
+		}
+	}
+
+	private static async AutocompleteHandler(interaction: AutocompleteInteraction): Promise<void> {
+		try {
+			const focus = interaction.options.getFocused(true);
+
+			const autocompletes = Bot.handlers.get(HandlerType.Autocompletes);
+			if (!autocompletes) throw 'No autocompletes registered.';
+
+			const autocomplete = autocompletes.get(focus.name) as IAutocomplete;
+			if (!autocomplete) throw `Autocomplete for ${focus} not found.`;
+
+			return autocomplete.execute(interaction);
+		}
+		catch (error) {
+			logError(error);
+			return interaction.respond([]);
+		}
+	}
+
+	private static async ContextMenuHandler(interaction: ContextMenuInteraction): Promise<void> {
+		try {
+			const contextMenus = Bot.handlers.get(HandlerType.ContextMenus);
+			if (!contextMenus) throw 'No contextMenus registered.';
+
+			const contextMenu = contextMenus.get(interaction.commandName) as IContextMenu;
+			if (!contextMenu) throw `ContextMenu ${interaction.commandName} not found.`;
+
+			return contextMenu.execute(interaction);
+		}
+		catch (error) {
+			logError(error);
+			return interaction.reply(Format.Reply({ msg: 'An error occured using this select menu.  Please try again later.', ephemeral: true }));
 		}
 	}
 }
