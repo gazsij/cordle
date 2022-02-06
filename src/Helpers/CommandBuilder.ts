@@ -122,6 +122,7 @@ export class CommandBuilder {
 		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
 
 		logSystem('Successfully reloaded application (/) commands.');
+		return body.length;
 	}
 
 	static async ImportFiles<T extends IImportable>(handlerType: HandlerType) {
