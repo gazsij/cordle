@@ -34,7 +34,7 @@ const execute = async (interaction: CommandInteraction, server?: IServer) => {
 };
 
 export default {
-	name: 'view',
+	customID: 'view',
 	description: 'View game for the current word.',
 	subCommands: [
 		{

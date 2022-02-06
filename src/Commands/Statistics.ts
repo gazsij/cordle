@@ -40,7 +40,7 @@ const execute = async (interaction: CommandInteraction, playerID: string, name: 
 };
 
 export default {
-	name: 'statistics',
+	customID: 'statistics',
 	description: 'View current statistics for a player.',
 	subCommandGroups: [
 		{

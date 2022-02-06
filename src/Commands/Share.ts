@@ -12,7 +12,7 @@ const execute = async (interaction: CommandInteraction, serverID?: string) => {
 };
 
 export default {
-	name: 'share',
+	customID: 'share',
 	description: 'Shares your result of today\'s word.',
 	subCommands: [
 		{
