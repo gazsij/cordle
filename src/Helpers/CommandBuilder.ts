@@ -1,10 +1,18 @@
+import path from 'path';
+import glob from 'glob';
+import debug from 'debug';
+import { promisify } from 'util';
+import { Collection } from 'discord.js';
 import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v9';
-import { Collection } from 'discord.js';
 
-import { ICommand, ICommandOption, ISubCommandGroup } from '../Types';
+import { IExport, ICommand, ICommandOption, ISubCommandGroup, ISubCommand, IImportable, HandlerType } from '../Types';
 import { Config } from './Config';
+
+const logSystem = debug('cordle:builder:system');
+
+const globPromise = promisify(glob);
 
 type SlashCommandOption = SlashCommandStringOption
 	| SlashCommandIntegerOption
@@ -64,7 +72,7 @@ export class CommandBuilder {
 		}
 	}
 
-	static AddSubCommand(builder: SlashCommandSubcommandBuilder, command: ICommand) {
+	static AddSubCommand(builder: SlashCommandSubcommandBuilder, command: ISubCommand) {
 		builder
 			.setName(command.name)
 			.setDescription(command.description);
@@ -88,7 +96,7 @@ export class CommandBuilder {
 
 	static AddCommand(command: ICommand) {
 		const builder = new SlashCommandBuilder()
-			.setName(command.name)
+			.setName(command.customID)
 			.setDescription(command.description);
 
 		if (command.options)
@@ -104,11 +112,32 @@ export class CommandBuilder {
 	}
 
 	static async RegisterCommands(commands: Collection<string, ICommand>) {
+		logSystem('Started refreshing application (/) commands.');
+
 		const body = commands.map(command => CommandBuilder.AddCommand(command));
 
 		const rest = new REST({ version: '9' }).setToken(Config.BOT_TOKEN);
 		await rest.put(Routes.applicationGuildCommands(Config.BOT_CLIENT_ID, Config.BOT_GUILD_ID), { body });
 
 		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
+
+		logSystem('Successfully reloaded application (/) commands.');
+	}
+
+	static async ImportFiles<T extends IImportable>(handlerType: HandlerType) {
+		const imports = new Collection<string, T>();
+
+		const folder = path.resolve(`${__dirname}/../${handlerType}/*{.js,.ts}`);
+		const files = await globPromise(folder);
+		if (!files.length)
+			return imports;
+
+		for (const file of files) {
+			const { default: data } = await import(file) as IExport<T>;
+			imports.set(data.customID, data);
+		}
+
+		logSystem(`Imported ${handlerType}: ${imports.size}`);
+		return imports;
 	}
 }

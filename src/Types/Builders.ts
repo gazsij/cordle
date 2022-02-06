@@ -1,12 +1,12 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
-import { CommandInteraction, CacheType, ButtonInteraction } from 'discord.js';
+import { CommandInteraction, CacheType, ButtonInteraction, SelectMenuInteraction, AutocompleteInteraction, ContextMenuInteraction } from 'discord.js';
 
-export interface ICommandExport {
-	default: ICommand
+export interface IExport<T extends ICommand | IButton | ISelectMenu | IAutocomplete | IContextMenu> {
+	default: T
 }
 
 export interface ICommand {
-	name: string
+	customID: string
 	description: string
 	options?: ICommandOption[]
 	subCommands?: ISubCommand[]
@@ -41,11 +41,33 @@ export interface ICommandChoice {
 	value: string | number
 }
 
-export interface IButtonExport {
-	default: IButton
-}
-
 export interface IButton {
 	customID: string
 	execute: (interaction: ButtonInteraction<CacheType>) => Promise<void>
 }
+
+export interface ISelectMenu {
+	customID: string
+	placeholder: string
+	options: ISelectMenuOptions[]
+	execute: (interaction: SelectMenuInteraction<CacheType>) => Promise<void>
+}
+
+export interface ISelectMenuOptions {
+	label: string
+	description: string
+	value: string
+}
+
+export interface IAutocomplete {
+	customID: string
+	execute: (interaction: AutocompleteInteraction<CacheType>) => Promise<void>
+}
+
+export interface IContextMenu {
+	customID: string
+
+	execute: (interaction: ContextMenuInteraction<CacheType>) => Promise<void>
+}
+
+export type IImportable = ICommand | IButton | ISelectMenu | IAutocomplete | IContextMenu;
