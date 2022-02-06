@@ -26,7 +26,7 @@ export class GameRepo {
 			return null;
 
 		const server = serverID && await ServerRepo.GetServer(serverID);
-		if (!server) return null;
+		if (serverID && !server) return null;
 
 		return GameModel.find({ player, server });
 	}
