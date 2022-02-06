@@ -10,6 +10,10 @@ jobs:
     name: Register Commands Api
     runs-on: ubuntu-latest
     environment: Production
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      BOT_CLIENT_ID: ${{ secrets.BOT_CLIENT_ID }}
+      BOT_GUILD_ID: ${{ secrets.BOT_GUILD_ID }}
 
     steps:
       - name: Checkout code
