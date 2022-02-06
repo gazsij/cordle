@@ -25,10 +25,6 @@ export class Bot {
 		for (const type of Object.values(HandlerType))
 			Bot.handlers.set(type, await CommandBuilder.ImportFiles(type));
 
-		const commands = Bot.handlers.get(HandlerType.Commands);
-		if (commands)
-			await CommandBuilder.RegisterCommands(commands as Collection<string, ICommand>);
-
 		// handle interactions
 		Bot.client.on('interactionCreate', Bot.InteractionHandler);
 
