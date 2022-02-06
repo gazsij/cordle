@@ -19,8 +19,8 @@ async function main() {
 		commands.set(data.customID, data);
 	}
 	console.log(`registering {${files.length}} commands`);
-
 	await CommandBuilder.RegisterCommands(commands);
+	console.log(`successfully loaded {${files.length}} commands`);
 }
 
 try {
