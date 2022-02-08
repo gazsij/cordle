@@ -6,16 +6,14 @@ import { Words, Format } from '../Helpers';
 export default {
 	customID: 'share-server',
 	execute: async interaction => {
-		if (interaction.replied)
-			return;
+		await interaction.update({ components: [] });
 
 		if (!interaction.inGuild())
 			return;
 
 		const member = interaction.member as GuildMember;
-		const name = member?.nickname ?? interaction.user.tag;
+		const name = member.nickname ?? interaction.user.tag;
 		const reply = await Words.ShareGame(interaction.user.id, name, interaction.guildId);
-
-		return interaction.reply(Format.Reply(reply));
+		await interaction.followUp(Format.Reply(reply));
 	}
 } as IButton;
