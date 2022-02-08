@@ -3,11 +3,11 @@ import glob from 'glob';
 import debug from 'debug';
 import { promisify } from 'util';
 import { Collection } from 'discord.js';
-import { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } from '@discordjs/builders';
+import { ContextMenuCommandBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandMentionableOption, SlashCommandNumberOption, SlashCommandRoleOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v9';
 
-import { IExport, ICommand, ICommandOption, ISubCommandGroup, ISubCommand, IImportable, HandlerType } from '../Types';
+import { IExport, ICommand, ICommandOption, ISubCommandGroup, ISubCommand, IImportable, HandlerType, IContextMenu } from '../Types';
 import { Config } from './Config';
 
 const logSystem = debug('cordle:builder:system');
@@ -97,7 +97,8 @@ export class CommandBuilder {
 	static AddCommand(command: ICommand) {
 		const builder = new SlashCommandBuilder()
 			.setName(command.customID)
-			.setDescription(command.description);
+			.setDescription(command.description)
+			.setDefaultPermission(command.defaultPermission ?? true);
 
 		if (command.options)
 			command.options.forEach(option => CommandBuilder.AddOption(builder, option));
@@ -111,10 +112,13 @@ export class CommandBuilder {
 		return builder.toJSON();
 	}
 
-	static async RegisterCommands(commands: Collection<string, ICommand>) {
+	static async RegisterCommands(commands: Collection<string, ICommand>, contextMenus: Collection<string, IContextMenu>) {
 		logSystem('Started refreshing application (/) commands.');
 
-		const body = commands.map(command => CommandBuilder.AddCommand(command));
+		const cmdJson = commands.map(command => CommandBuilder.AddCommand(command));
+		const ctxJson = contextMenus.map(contextMenu => CommandBuilder.AddContextMenu(contextMenu));
+
+		const body = [...cmdJson, ...ctxJson];
 
 		const rest = new REST({ version: '9' }).setToken(Config.BOT_TOKEN);
 		await rest.put(Routes.applicationGuildCommands(Config.BOT_CLIENT_ID, Config.BOT_GUILD_ID), { body });
@@ -122,6 +126,27 @@ export class CommandBuilder {
 		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
 
 		logSystem('Successfully reloaded application (/) commands.');
+	}
+
+	static async AddContextMenu(contextMenu: IContextMenu) {
+		return new ContextMenuCommandBuilder()
+			.setName(contextMenu.customID)
+			.setType(contextMenu.type)
+			.setDefaultPermission(contextMenu.defaultPermission ?? true)
+			.toJSON();
+	}
+
+	static async RegisterContextMenus(contextMenus: Collection<string, IContextMenu>) {
+		logSystem('Started refreshing application context menus.');
+
+		const body = contextMenus.map(contextMenu => CommandBuilder.AddContextMenu(contextMenu));
+
+		const rest = new REST({ version: '9' }).setToken(Config.BOT_TOKEN);
+		await rest.put(Routes.applicationGuildCommands(Config.BOT_CLIENT_ID, Config.BOT_GUILD_ID), { body });
+
+		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
+
+		logSystem('Successfully reloaded application context menus.');
 	}
 
 	static async ImportFiles<T extends IImportable>(handlerType: HandlerType) {
