@@ -43,6 +43,7 @@ export class Bot {
 		if (!Bot.client.user)
 			return;
 
+		Bot.client.user?.setActivity('Wordle');
 		logSystem(`Logged in as ${Bot.client.user.tag}`);
 	}
 
