@@ -113,7 +113,7 @@ export class CommandBuilder {
 	}
 
 	static async RegisterCommands(commands: Collection<string, ICommand>, contextMenus: Collection<string, IContextMenu>) {
-		logSystem('Started refreshing application (/) commands.');
+		logSystem('Started refreshing application commands and context menus.');
 
 		const cmdJson = commands.map(command => CommandBuilder.AddCommand(command));
 		const ctxJson = contextMenus.map(contextMenu => CommandBuilder.AddContextMenu(contextMenu));
@@ -125,10 +125,10 @@ export class CommandBuilder {
 
 		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
 
-		logSystem('Successfully reloaded application (/) commands.');
+		logSystem('Successfully reloaded application commands and context menus.');
 	}
 
-	static async AddContextMenu(contextMenu: IContextMenu) {
+	static AddContextMenu(contextMenu: IContextMenu) {
 		return new ContextMenuCommandBuilder()
 			.setName(contextMenu.customID)
 			.setType(contextMenu.type)
@@ -136,23 +136,10 @@ export class CommandBuilder {
 			.toJSON();
 	}
 
-	static async RegisterContextMenus(contextMenus: Collection<string, IContextMenu>) {
-		logSystem('Started refreshing application context menus.');
-
-		const body = contextMenus.map(contextMenu => CommandBuilder.AddContextMenu(contextMenu));
-
-		const rest = new REST({ version: '9' }).setToken(Config.BOT_TOKEN);
-		await rest.put(Routes.applicationGuildCommands(Config.BOT_CLIENT_ID, Config.BOT_GUILD_ID), { body });
-
-		await rest.put(Routes.applicationCommands(Config.BOT_CLIENT_ID), { body });
-
-		logSystem('Successfully reloaded application context menus.');
-	}
-
 	static async ImportFiles<T extends IImportable>(handlerType: HandlerType) {
 		const imports = new Collection<string, T>();
 
-		const folder = path.resolve(`${__dirname}/../${handlerType}/*{.js,.ts}`);
+		const folder = path.resolve(`${__dirname}/../Interactions/${handlerType}/*{.js,.ts}`);
 		const files = await globPromise(folder);
 		if (!files.length)
 			return imports;

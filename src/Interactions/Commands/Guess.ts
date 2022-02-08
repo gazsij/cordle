@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import { CommandInteraction, MessageButton } from 'discord.js';
 
-import { ServerRepo, GameRepo } from '../Repositories';
-import { Words, Format } from '../Helpers';
-import { IReplyOptions, IServer, ICommand } from '../Types';
+import { ServerRepo, GameRepo } from '../../Repositories';
+import { Words, Format } from '../../Helpers';
+import { IReplyOptions, IServer, ICommand } from '../../Types';
 
 const execute = async (interaction: CommandInteraction, server?: IServer) => {
 	const currentDay = Words.GetCurrentDay(server?.date_joined);
@@ -68,7 +68,7 @@ export default {
 			],
 			execute: async interaction => {
 				if (!interaction.inGuild())
-					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.' }));
+					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.', ephemeral: true }));
 
 				const server = await ServerRepo.GetOrCreatServer(interaction.guildId);
 				return execute(interaction, server);
