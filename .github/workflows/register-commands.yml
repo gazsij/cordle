@@ -30,4 +30,4 @@ jobs:
         run: npm install --frozen-lockfile
 
       - name: Run Script
-        run: npm run ts ./scripts/register-commands.ts
+        run: npm run register
