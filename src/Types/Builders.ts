@@ -1,3 +1,4 @@
+import { ContextMenuCommandType } from '@discordjs/builders';
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import { CommandInteraction, CacheType, ButtonInteraction, SelectMenuInteraction, AutocompleteInteraction, ContextMenuInteraction } from 'discord.js';
 
@@ -8,6 +9,7 @@ export interface IExport<T extends ICommand | IButton | ISelectMenu | IAutocompl
 export interface ICommand {
 	customID: string
 	description: string
+	defaultPermission?: boolean
 	options?: ICommandOption[]
 	subCommands?: ISubCommand[]
 	subCommandGroups?: ISubCommandGroup[]
@@ -66,7 +68,8 @@ export interface IAutocomplete {
 
 export interface IContextMenu {
 	customID: string
-
+	type: ContextMenuCommandType
+	defaultPermission?: boolean
 	execute: (interaction: ContextMenuInteraction<CacheType>) => Promise<void>
 }
 
