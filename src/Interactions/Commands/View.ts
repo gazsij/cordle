@@ -47,7 +47,7 @@ export default {
 			description: 'View game for the current server word.',
 			execute: async interaction => {
 				if (!interaction.inGuild())
-					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.' }));
+					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.', ephemeral: true }));
 
 				const server = await ServerRepo.GetServer(interaction.guildId);
 				if (!server)

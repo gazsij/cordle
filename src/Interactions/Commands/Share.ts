@@ -25,7 +25,7 @@ export default {
 			description: 'Shares your result of today\'s server word.',
 			execute: interaction => {
 				if (!interaction.inGuild())
-					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.' }));
+					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.', ephemeral: true }));
 
 				return execute(interaction, interaction.guildId);
 			}

@@ -68,7 +68,7 @@ export default {
 			],
 			execute: async interaction => {
 				if (!interaction.inGuild())
-					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.' }));
+					return interaction.reply(Format.Reply({ msg: 'Please use this command in a server.', ephemeral: true }));
 
 				const server = await ServerRepo.GetOrCreatServer(interaction.guildId);
 				return execute(interaction, server);
