@@ -1,8 +1,8 @@
 import { CommandInteraction, MessageButton } from 'discord.js';
 
-import { ServerRepo, GameRepo } from '../Repositories';
-import { Words, Format } from '../Helpers';
-import { IReplyOptions, IServer, ICommand } from '../Types';
+import { ServerRepo, GameRepo } from '../../Repositories';
+import { Words, Format } from '../../Helpers';
+import { IReplyOptions, IServer, ICommand } from '../../Types';
 
 const execute = async (interaction: CommandInteraction, server?: IServer) => {
 	const type = server ? 'Server' : 'Global';

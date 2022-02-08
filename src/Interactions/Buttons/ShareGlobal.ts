@@ -1,7 +1,7 @@
 import { GuildMember } from 'discord.js';
 
-import { IButton } from '../Types';
-import { Words, Format } from '../Helpers';
+import { IButton } from '../../Types';
+import { Words, Format } from '../../Helpers';
 
 export default {
 	customID: 'share-global',

@@ -1,8 +1,8 @@
 import { GuildMember, CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord-api-types/payloads/v9';
 
-import { Format, Words } from '../Helpers';
-import { ICommand } from '../Types';
+import { Format, Words } from '../../Helpers';
+import { ICommand } from '../../Types';
 
 const server = async (interaction: CommandInteraction, execute: (interaction: CommandInteraction, serverID?: string) => Promise<void>) => {
 	if (!interaction.inGuild())

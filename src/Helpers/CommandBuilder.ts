@@ -139,7 +139,7 @@ export class CommandBuilder {
 	static async ImportFiles<T extends IImportable>(handlerType: HandlerType) {
 		const imports = new Collection<string, T>();
 
-		const folder = path.resolve(`${__dirname}/../${handlerType}/*{.js,.ts}`);
+		const folder = path.resolve(`${__dirname}/../Interactions/${handlerType}/*{.js,.ts}`);
 		const files = await globPromise(folder);
 		if (!files.length)
 			return imports;

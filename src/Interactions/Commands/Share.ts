@@ -1,7 +1,7 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
 
-import { Words, Format } from '../Helpers';
-import { ICommand } from '../Types';
+import { Words, Format } from '../../Helpers';
+import { ICommand } from '../../Types';
 
 const execute = async (interaction: CommandInteraction, serverID?: string) => {
 	const member = interaction.member as GuildMember;
